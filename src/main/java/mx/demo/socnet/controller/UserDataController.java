@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package mx.demo.socnet.service;
+package mx.demo.socnet.controller;
 
-import lombok.extern.slf4j.Slf4j;
 import mx.demo.socnet.data.entity.UserData;
-import mx.demo.socnet.data.repository.UserDataRepository;
+import mx.demo.socnet.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,19 +35,22 @@ import java.util.List;
  * @project socnet
  */
 
-@Slf4j
-@Service
-public class UserDataService {
+@Controller
+@RequestMapping("/directory")
+public class UserDataController {
 
-    private final UserDataRepository userDataRepository;
+    private final UserDataService userDataService;
 
     @Autowired
-    public UserDataService(UserDataRepository userDataRepository) {
-        this.userDataRepository = userDataRepository;
+    public UserDataController(UserDataService userDataService) {
+        this.userDataService = userDataService;
     }
 
-    public List<UserData> getAllUsers() {
-        return (List<UserData>) userDataRepository.findAll();
-    }
+    @GetMapping
+    public String getReservations(Model model) {
+        List<UserData> roomReservations = userDataService.getAllUsers();
+        model.addAttribute("userdatas", roomReservations);
 
+        return "directory";
+    }
 }
