@@ -20,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import mx.demo.socnet.data.entity.UserData;
 import mx.demo.socnet.data.repository.UserDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,6 +46,10 @@ public class UserDataService {
 
     public List<UserData> getAllUsers() {
         return (List<UserData>) userDataRepository.findAll();
+    }
+
+    public Page<UserData> getUsersPage(int page, int size) {
+        return userDataRepository.findAll(PageRequest.of(page, size));
     }
 
 }

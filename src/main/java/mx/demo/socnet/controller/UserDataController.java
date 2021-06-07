@@ -19,14 +19,18 @@ package mx.demo.socnet.controller;
 import mx.demo.socnet.data.entity.UserData;
 import mx.demo.socnet.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @author Mladen Nikolic <mladen.nikolic.mex@gmail.com>
@@ -36,8 +40,11 @@ import java.util.List;
  */
 
 @Controller
-@RequestMapping("/directory")
+@RequestMapping
 public class UserDataController {
+
+    @Value("${defaults.page-size}")
+    private int pageSize;
 
     private final UserDataService userDataService;
 
@@ -46,10 +53,22 @@ public class UserDataController {
         this.userDataService = userDataService;
     }
 
-    @GetMapping
-    public String getReservations(Model model) {
-        List<UserData> roomReservations = userDataService.getAllUsers();
-        model.addAttribute("userdatas", roomReservations);
+    @GetMapping("/directory")
+    public String listBooks(
+            Model model,
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size) {
+
+        Page<UserData> userData = userDataService.getUsersPage(page.orElse(0), size.orElse(pageSize));
+        model.addAttribute("userdatas", userData);
+
+        int totalPages = userData.getTotalPages();
+        if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
 
         return "directory";
     }
