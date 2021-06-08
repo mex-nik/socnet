@@ -23,37 +23,43 @@
 
     <title>SocNet</title>
 
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/ui-darkness/jquery-ui.css"/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" integrity="undefined" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.min.js" integrity="undefined" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="css/site.css"/>
 
-    <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
 </head>
 <body>
-<nav class="navbar navbar-inverse navbar-fixed-top">
-    <label class="navbar-brand">SocNet Directory</label>
-    <div class="container">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="/">Home</a>
-        </div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">SocNet Directory</a>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+            </li>
+        </ul>
     </div>
 </nav>
 <div class="container">
     <table class="table table-striped table-bordered">
         <tr>
-            <td>Name</td>
-            <td>Surname</td>
-            <td>Email</td>
-            <td>Password</td>
+            <td width="25%">Name</td>
+            <td width="25%">Surname</td>
+            <td width="25%">Email</td>
+            <td align="center" width="25%" colspan="2">Actions</td>
         </tr>
         <tr th:each="userdata: ${userdatas}">
             <td th:text="${userdata.firstName}">Name</td>
             <td th:text="${userdata.lastName}">Surname</td>
-            <td th:text="${userdata.email}">Email</td>
-            <td th:text="${userdata.password}">Secret password</td>
+            <td th:text="${userdata.email}" th:title="${userdata.password}">Email</td>
+            <td>
+                <form method="POST" th:action="@{/user}">
+                    <button type="submit"th:name="user" th:value="${userdata}" class="link-button">posts</button>
+                </form>
+<!--                <a th:href="@{'/userDatas/' + ${userdata.id} + '/posts'}">Posts</a></td>-->
+            <td><a th:href="@{'/userDatas/' + ${userdata.id}}">Chat</a></td>
         </tr>
     </table>
     <div class="row">
@@ -88,7 +94,9 @@
     <div class="container">
         <div class="row">
             <div class="col-md-4"></div>
-            <div class="col-md-4"><p class="text-muted">@Copyright 2021 Mladen Nikolic</p></div>
+            <div class="col-md-4">
+                <p class="text-muted">@Copyright 2021 <a href="mailto:mladen.nikolic.mex@gmail.com">Mladen Nikolic</a> </p>
+            </div>
         </div>
     </div>
 </footer>

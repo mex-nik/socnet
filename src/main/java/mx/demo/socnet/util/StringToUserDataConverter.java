@@ -14,55 +14,31 @@
  * limitations under the License.
  */
 
-package mx.demo.socnet.data.entity;
+package mx.demo.socnet.util;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.util.List;
+import mx.demo.socnet.data.entity.UserData;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Mladen Nikolic <mladen.nikolic.mex@gmail.com>
  * https://www.linkedin.com/in/mladen-nikolic-mex/
- * @created 04.06.2021
+ * @created 08.06.2021
  * @project socnet
  */
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-@Table
-@JsonSerialize
-public class UserData {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private Boolean admin;
-    private String gender;
-    private String country;
-    private String password;
-    @JsonManagedReference
-    @OneToMany(mappedBy = "user")
-    private List<UserPost> posts;
+@Component
+public class StringToUserDataConverter implements Converter<String, UserData> {
 
     @Override
-    public String toString() {
+    public UserData convert(String userData) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            return mapper.writeValueAsString(this);
+            return mapper.readValue(userData, UserData.class);
         } catch (JsonProcessingException e) {
         }
-        return super.toString();
+        return null;
     }
 }

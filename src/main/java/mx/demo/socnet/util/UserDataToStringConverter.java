@@ -14,39 +14,23 @@
  * limitations under the License.
  */
 
-package mx.demo.socnet.data.entity;
+package mx.demo.socnet.util;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-
-import javax.persistence.*;
-import java.sql.Date;
+import mx.demo.socnet.data.entity.UserData;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Mladen Nikolic <mladen.nikolic.mex@gmail.com>
  * https://www.linkedin.com/in/mladen-nikolic-mex/
- * @created 05.06.2021
+ * @created 08.06.2021
  * @project socnet
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-@Table
-@JsonSerialize
-public class UserPost {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    private UserData user;
-    private String post;
-    private Date published;
 
+@Component
+public class UserDataToStringConverter implements Converter<UserData, String> {
+    @Override
+    public String convert(UserData userData) {
+        return userData.toString();
+    }
 }

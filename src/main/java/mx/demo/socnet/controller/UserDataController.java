@@ -23,9 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +52,7 @@ public class UserDataController {
     }
 
     @GetMapping("/directory")
-    public String listBooks(
+    public String listUsers(
             Model model,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
@@ -62,14 +60,26 @@ public class UserDataController {
         Page<UserData> userData = userDataService.getUsersPage(page.orElse(0), size.orElse(pageSize));
         model.addAttribute("userdatas", userData);
 
-        int totalPages = userData.getTotalPages();
+        model.addAttribute("pageNumbers", pageNumbers(userData.getTotalPages()));
+        return "directory";
+    }
+
+    @PostMapping("/user")
+    public String userData(
+            Model model,
+            @ModelAttribute("user") UserData user) {
+
+
+        return "user";
+    }
+
+    private List<Integer> pageNumbers(int totalPages) {
         if (totalPages > 0) {
             List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
                     .boxed()
                     .collect(Collectors.toList());
-            model.addAttribute("pageNumbers", pageNumbers);
+            return pageNumbers;
         }
-
-        return "directory";
+        return null;
     }
 }

@@ -19,6 +19,7 @@ package mx.demo.socnet.service;
 import lombok.extern.slf4j.Slf4j;
 import mx.demo.socnet.data.entity.UserData;
 import mx.demo.socnet.data.repository.UserDataRepository;
+import org.apache.el.stream.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -50,6 +51,10 @@ public class UserDataService {
 
     public Page<UserData> getUsersPage(int page, int size) {
         return userDataRepository.findAll(PageRequest.of(page, size));
+    }
+
+    public UserData getUser(long id) {
+        return userDataRepository.findById(id).orElse(null);
     }
 
 }
