@@ -43,20 +43,22 @@
     </div>
 </nav>
 <div class="container">
-    <table class="table table-striped table-bordered">
-        <tr>
-            <td width="25%">Name</td>
-            <td width="25%">Surname</td>
-            <td width="25%">Email</td>
-            <td align="center" width="25%" colspan="2">Actions</td>
-        </tr>
+    <table class="table table-light table-striped">
+        <thead>
+            <tr>
+                <td width="25%">Name</td>
+                <td width="25%">Surname</td>
+                <td width="25%">Email</td>
+                <td align="center" width="25%" colspan="2">Actions</td>
+            </tr>
+        </thead>
         <tr th:each="userdata: ${userdatas}">
             <td th:text="${userdata.firstName}">Name</td>
             <td th:text="${userdata.lastName}">Surname</td>
             <td th:text="${userdata.email}" th:title="${userdata.password}">Email</td>
             <td>
                 <form method="POST" th:action="@{/user}">
-                    <button type="submit"th:name="user" th:value="${userdata}" class="link-button">posts</button>
+                    <button  class="btn btn-light" type="submit" th:name="user" th:value="${userdata}">posts</button>
                 </form>
 <!--                <a th:href="@{'/userDatas/' + ${userdata.id} + '/posts'}">Posts</a></td>-->
             <td><a th:href="@{'/userDatas/' + ${userdata.id}}">Chat</a></td>
@@ -74,7 +76,7 @@
                 </span>
                 <span>
                     Page:
-                    <select th:id="page" onchange="location = this.value;">
+                    <select style="background-color: white; border: none" th:id="page" onchange="location = this.value;">
                         <option th:each="pageNumber : ${pageNumbers}"
                                 th:value="@{/directory(size=${userdatas.size}, page=${pageNumber-1})}" th:text="${pageNumber}" th:selected="${(pageNumber-1)==userdatas.number}"/>
                     </select>
@@ -90,7 +92,7 @@
         </div>
     </div>
 </div>
-<footer class="footer navbar-inverse navbar-fixed-bottom">
+<footer class="footer navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <div class="row">
             <div class="col-md-4"></div>
