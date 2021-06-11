@@ -57,4 +57,8 @@ public class UserDataService {
         return userDataRepository.findById(id).orElse(null);
     }
 
+    public List<UserData> getUser(String email) {
+        return userDataRepository.findByEmail(email);
+    }
+
 }

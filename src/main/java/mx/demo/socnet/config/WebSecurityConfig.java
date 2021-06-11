@@ -14,29 +14,16 @@
  * limitations under the License.
  */
 
-package mx.demo.socnet.security;
+package mx.demo.socnet.config;
 
-import mx.demo.socnet.data.entity.Roles;
-import mx.demo.socnet.data.entity.UserData;
-import mx.demo.socnet.data.repository.UserDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-
-import java.util.List;
-
-import static org.springframework.security.core.userdetails.User.withUsername;
 
 /**
  * @author Mladen Nikolic <mladen.nikolic.mex@gmail.com>
@@ -49,18 +36,19 @@ import static org.springframework.security.core.userdetails.User.withUsername;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserDataRepository userDataRepository;
+
+    private final UserDetailsService userDetailsService;
 
     @Autowired
-    public WebSecurityConfig(UserDataRepository userDataRepository) {
-        this.userDataRepository = userDataRepository;
+    public WebSecurityConfig(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
     }
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-//                .antMatchers("/", "/directory").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -73,11 +61,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll();
     }
 
-
-    @Override
     @Bean
-    public UserDetailsService userDetailsService() {
-        return new SocNetUserDetailsService(userDataRepository);
+    public DaoAuthenticationProvider authenticationProvider(){
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        return provider;
     }
 
 }

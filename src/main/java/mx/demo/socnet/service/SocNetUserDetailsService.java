@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package mx.demo.socnet.security;
+package mx.demo.socnet.service;
 
+import lombok.extern.slf4j.Slf4j;
 import mx.demo.socnet.data.entity.Roles;
 import mx.demo.socnet.data.entity.UserData;
 import mx.demo.socnet.data.repository.UserDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -36,6 +37,9 @@ import static org.springframework.security.core.userdetails.User.withUsername;
  * @created 09.06.2021
  * @project socnet
  */
+
+@Slf4j
+@Service
 public class SocNetUserDetailsService implements UserDetailsService {
 
     private final UserDataRepository userDataRepository;
