@@ -14,27 +14,33 @@
  * limitations under the License.
  */
 
-package mx.demo.socnet.data.entity;
+package mx.demo.socnet.util;
 
-import lombok.Value;
-import org.springframework.security.core.GrantedAuthority;
+import mx.demo.socnet.data.entity.Roles;
+
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
 /**
  * @author Mladen Nikolic <mladen.nikolic.mex@gmail.com>
  * https://www.linkedin.com/in/mladen-nikolic-mex/
- * @created 09.06.2021
+ * @created 11.06.2021
  * @project socnet
  */
-@Value
-public class Roles implements GrantedAuthority {
 
-    public final static String ADMIN = "admin";
-    public final static String REGULAR = "regular";
-
-    private final String authority;
+@Converter
+public class RolesConverter implements AttributeConverter<Roles, Boolean> {
 
     @Override
-    public String getAuthority() {
-        return authority;
+    public Boolean convertToDatabaseColumn(Roles roles) {
+        return roles.equals(Roles.ADMIN);
+    }
+
+    @Override
+    public Roles convertToEntityAttribute(Boolean isAdmin) {
+        if (isAdmin) {
+            return new Roles(Roles.ADMIN);
+        }
+        return new Roles(Roles.REGULAR);
     }
 }

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mx.demo.socnet.util.RolesConverter;
 
 import javax.persistence.*;
 import java.util.List;
@@ -47,7 +48,9 @@ public class UserData {
     private String firstName;
     private String lastName;
     private String email;
-    private Boolean admin;
+    @Convert(converter = RolesConverter.class)
+    @Column(name = "admin")
+    private Roles role;
     private String gender;
     private String country;
     private String password;

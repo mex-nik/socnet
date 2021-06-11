@@ -61,7 +61,7 @@ public class SocNetUserDetailsService implements UserDetailsService {
         return withUsername(userDatas.get(0).getEmail())
                 .password(userDatas.get(0).getPassword())
                 .passwordEncoder(pass -> "{noop}" + pass)
-                .authorities(new Roles(userDatas.get(0).getAdmin()))
+                .authorities(userDatas.get(0).getRole())
                 .accountExpired(false)
                 .accountLocked(false)
                 .credentialsExpired(false)
