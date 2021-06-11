@@ -14,24 +14,34 @@
  * limitations under the License.
  */
 
-package mx.demo.socnet.data.repository;
+package mx.demo.socnet.data.entity;
 
-import mx.demo.socnet.data.entity.UserData;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.stereotype.Repository;
-
-import java.util.List;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * @author Mladen Nikolic <mladen.nikolic.mex@gmail.com>
  * https://www.linkedin.com/in/mladen-nikolic-mex/
- * @created 04.06.2021
+ * @created 09.06.2021
  * @project socnet
  */
 
-@Repository
-public interface UserDataRepository extends PagingAndSortingRepository<UserData, Long> {
+public class Roles implements GrantedAuthority {
 
-    List<UserData> findByEmail(String email);
+    private final String ADMIN = "admin";
+    private final String REGULAR = "admin";
 
+    private final String authority;
+
+    public Roles(boolean isAdmin) {
+        if(isAdmin){
+            authority = ADMIN;
+        } else {
+            authority = REGULAR;
+        }
+    }
+
+    @Override
+    public String getAuthority() {
+        return authority;
+    }
 }

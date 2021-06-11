@@ -38,32 +38,35 @@
             <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="/directory">Directory</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="/login?logout">Logout</a>
-            </li>
         </ul>
     </div>
 </nav>
 <div class="container">
-    <div class="row">
-        <div class="col-md-4 position-relative">
-            <div class="card  mb-3" >
-                <div class="card-header" th:text="${user.firstName} + ' ' + ${user.lastName}"/>
-                <div class="card-body" th:text="${user.email}" th:title="${user.password}"/>
-                <span class="card-body" th:text="${user.gender}"/>
-                <span class="card-body" th:text="${user.country}"/>
+
+<!--    <div class="col-md-4 position-relative">-->
+        <div class="card  mb-3" >
+            <div class="card-header">Login</div>
+            <div class="card-body">
+                <div th:if="${param.error}" class="alert alert-danger" role="alert" >
+                    Invalid username and password.
+                </div>
+                <div th:if="${param.logout}" class="alert alert-info" role="alert">
+                    You have been logged out.
+                </div>
+                <form th:action="@{/login}" method="post">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="email">email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <input type="text" class="form-control" placeholder="email" aria-label="email" aria-describedby="basic-user" name="email" >
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="password">password</span>
+                    <input type="password" class="form-control" placeholder="password" aria-label="password" aria-describedby="basic-password" name="password">
+                </div>
+                    <button class="btn btn-light" type="submit">Submit</button>
+                </form>
             </div>
         </div>
-        <div class="col-lg-8 position-relative">
-            <div th:if="${user.posts.size == 0}">
-                <h1 >No posts</h1>
-            </div>
-            <div class="card  mb-3" th:each="post: ${user.posts}" th:if="${user.posts.size > 0}" >
-                <div class="card-header" th:text="${post.published}"/>
-                <div class="card-body" th:text="${post.post}"/>
-            </div>
-        </div>
-    </div>
+<!--    </div>-->
 </div>
 <footer class="footer navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
