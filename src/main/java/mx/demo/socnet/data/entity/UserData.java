@@ -19,11 +19,14 @@ package mx.demo.socnet.data.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mx.demo.socnet.util.BooleanToRolesConverter;
 import mx.demo.socnet.util.RolesConverter;
+import mx.demo.socnet.util.RolesToBooleanConverter;
 
 import javax.persistence.*;
 import java.util.List;
@@ -48,6 +51,8 @@ public class UserData {
     private String firstName;
     private String lastName;
     private String email;
+    @JsonSerialize(converter = RolesToBooleanConverter.class)
+    @JsonDeserialize(converter = BooleanToRolesConverter.class)
     @Convert(converter = RolesConverter.class)
     @Column(name = "admin")
     private Roles role;

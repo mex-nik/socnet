@@ -21,6 +21,8 @@ import mx.demo.socnet.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -71,6 +73,22 @@ public class UserDataController {
 
 
         return "user";
+    }
+
+    @GetMapping("/")
+    public String getUser(Model model) {
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        String email = principal.toString();
+        if (principal instanceof UserDetails) {
+            email = ((UserDetails)principal).getUsername();
+        }
+        List<UserData> userData = userDataService.getUser(email);
+        if (!userData.isEmpty()) {
+            model.addAttribute("userLogin", userData.get(0));
+        }
+        return "home";
     }
 
     private List<Integer> pageNumbers(int totalPages) {
