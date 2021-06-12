@@ -27,6 +27,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,9 +56,12 @@ public class UserDataController {
 
     @GetMapping("/directory")
     public String listUsers(
+            HttpSession httpSession,
             Model model,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
+        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
+        model.addAttribute("user", loggedInUser);
 
         Page<UserData> userData = userDataService.getUsersPage(page.orElse(0), size.orElse(pageSize));
         model.addAttribute("userdatas", userData);
@@ -67,27 +71,22 @@ public class UserDataController {
     }
 
     @PostMapping("/user")
-    public String userData(
+    public String userDataPost(
             Model model,
             @ModelAttribute("user") UserData user) {
-
-
+        return "user";
+    }
+    @GetMapping("/user")
+    public String userDataGet(HttpSession httpSession, Model model) {
+        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
+        model.addAttribute("user", loggedInUser);
         return "user";
     }
 
     @GetMapping("/")
-    public String getUser(Model model) {
-
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        String email = principal.toString();
-        if (principal instanceof UserDetails) {
-            email = ((UserDetails)principal).getUsername();
-        }
-        List<UserData> userData = userDataService.getUser(email);
-        if (!userData.isEmpty()) {
-            model.addAttribute("userLogin", userData.get(0));
-        }
+    public String getUser(HttpSession httpSession, Model model) {
+        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
+        model.addAttribute("userLogin", loggedInUser);
         return "home";
     }
 

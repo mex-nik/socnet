@@ -60,7 +60,7 @@ public class UserData {
     private String country;
     private String password;
     @JsonManagedReference
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<UserPost> posts;
 
     @Override
@@ -69,6 +69,7 @@ public class UserData {
         try {
             return mapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
         return super.toString();
     }

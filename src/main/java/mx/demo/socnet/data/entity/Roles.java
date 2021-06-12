@@ -16,6 +16,7 @@
 
 package mx.demo.socnet.data.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Value;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -26,6 +27,7 @@ import org.springframework.security.core.GrantedAuthority;
  * @project socnet
  */
 @Value
+@JsonSerialize
 public class Roles implements GrantedAuthority {
 
     public final static String ADMIN = "admin";

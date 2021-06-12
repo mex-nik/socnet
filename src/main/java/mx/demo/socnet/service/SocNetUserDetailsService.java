@@ -17,16 +17,15 @@
 package mx.demo.socnet.service;
 
 import lombok.extern.slf4j.Slf4j;
-import mx.demo.socnet.data.entity.Roles;
 import mx.demo.socnet.data.entity.UserData;
 import mx.demo.socnet.data.repository.UserDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 import static org.springframework.security.core.userdetails.User.withUsername;
@@ -44,9 +43,12 @@ public class SocNetUserDetailsService implements UserDetailsService {
 
     private final UserDataRepository userDataRepository;
 
+    private HttpSession httpSession;
+
     @Autowired
-    public SocNetUserDetailsService(UserDataRepository userDataRepository) {
+    public SocNetUserDetailsService(UserDataRepository userDataRepository, HttpSession httpSession) {
         this.userDataRepository = userDataRepository;
+        this.httpSession = httpSession;
     }
 
     @Override
@@ -57,7 +59,7 @@ public class SocNetUserDetailsService implements UserDetailsService {
         } else if (userDatas.size() > 1){
             new UsernameNotFoundException(String.format("Multiple users with email %s", email));
         }
-
+        httpSession.setAttribute("user", userDatas.get(0));
         return withUsername(userDatas.get(0).getEmail())
                 .password(userDatas.get(0).getPassword())
                 .passwordEncoder(pass -> "{noop}" + pass)
