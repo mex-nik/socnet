@@ -76,10 +76,19 @@ public class UserDataController {
             @ModelAttribute("user") UserData user) {
         return "user";
     }
+
     @GetMapping("/user")
-    public String userDataGet(HttpSession httpSession, Model model) {
-        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
-        model.addAttribute("user", loggedInUser);
+    public String userDataGet(
+            HttpSession httpSession,
+            Model model,
+            @RequestParam("userId") Optional<Long> userId) {
+        UserData user;
+        if (userId.isPresent()) {
+            user = userDataService.getUser(userId.get());
+        } else {
+            user = (UserData) httpSession.getAttribute("user");
+        }
+        model.addAttribute("user", user);
         return "user";
     }
 

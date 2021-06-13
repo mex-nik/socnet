@@ -54,7 +54,7 @@
                 <td align="center" width="25%" colspan="2">Actions</td>
             </tr>
         </thead>
-        <tr th:each="userdata: ${userdatas}">
+        <tr th:each="userdata: ${userdatas}" th:if="${userdata.id} != ${user.id}">
             <td th:text="${userdata.firstName}">Name</td>
             <td th:text="${userdata.lastName}">Surname</td>
             <td th:text="${userdata.email}" th:title="${userdata.password}">Email</td>
