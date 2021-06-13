@@ -61,4 +61,8 @@ public class UserDataService {
         return userDataRepository.findByEmail(email);
     }
 
+    public void updateUser(UserData userData) {
+        userDataRepository.save(userData);
+    }
+
 }

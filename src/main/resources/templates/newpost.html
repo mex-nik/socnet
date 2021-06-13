@@ -45,23 +45,13 @@
 
 <!--    <div class="col-md-4 position-relative">-->
         <div class="card  mb-3" >
-            <div class="card-header">Login</div>
+            <div class="card-header">New Post</div>
             <div class="card-body">
-                <div th:if="${param.error}" class="alert alert-danger" role="alert" >
-                    Invalid username and password.
-                </div>
-                <div th:if="${param.logout}" class="alert alert-info" role="alert">
-                    You have been logged out.
-                </div>
-                <form th:action="@{/login}" method="POST">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="email">email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                    <input type="text" class="form-control" placeholder="email" aria-label="email" aria-describedby="basic-user" name="email" >
-                </div>
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="password">password</span>
-                    <input type="password" class="form-control" placeholder="password" aria-label="password" aria-describedby="basic-password" name="password">
-                </div>
+                <form th:action="@{/postAdd}" method="POST">
+                    <div class="input-group">
+                        <span class="input-group-text">Enter post</span>
+                        <textarea class="form-control" aria-label="postText" name="postText"></textarea>
+                    </div>
                     <button class="btn btn-light" type="submit">Submit</button>
                 </form>
             </div>

@@ -31,13 +31,16 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">SocNet Directory</a>
+        <a class="navbar-brand" href="/">SocNet</a>
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="/directory">Directory</a>
             </li>
             <li class="nav-item">
                 <a  class="nav-link active" aria-current="page" th:href="@{/user}">My posts</a>
+            </li>
+            <li class="nav-item">
+                <a  class="nav-link active" aria-current="page" th:href="@{/newpost}">New post</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active" href="/login?logout">Logout</a>
@@ -52,8 +55,26 @@
 <!--    </div>-->
 
 <!--    <h1 th:inline="text">Welcome [[${#httpServletRequest.remoteUser}]]!</h1>-->
-    <h1 th:inline="text">Welcome [[${userLogin.firstName}]]!</h1>
-    <h1 th:inline="text">your id=[[${userLogin.id}]]!</h1>
+    <h1 th:inline="text">Welcome [[${userLogin.firstName}]]! your id=[[${userLogin.id}]]!</h1>
+    <div>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc luctus neque vitae massa efficitur scelerisque. Donec sem lacus, pretium at massa at, laoreet bibendum arcu. Proin fringilla lectus ac velit consequat tristique. Ut efficitur in orci a pulvinar. Nullam tellus tortor, suscipit blandit lorem id, tempor vehicula tortor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Aliquam id ultricies nulla, ac commodo enim. In massa odio, molestie eget lorem sed, pulvinar ullamcorper erat. Nunc tincidunt, leo vitae efficitur lobortis, nibh est feugiat eros, at porttitor diam ipsum non diam. Sed sed fringilla arcu. Vestibulum risus massa, fringilla eget lobortis quis, tristique a turpis. Cras eu vulputate arcu. Suspendisse at scelerisque ex. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Duis eu felis lacinia, blandit ipsum quis, ultricies erat. Integer id metus aliquet, ultrices ante elementum, ultrices lacus.
+
+        Suspendisse nec neque at mauris semper sagittis ac pellentesque dui. Maecenas eu nulla lectus. Phasellus at eros rutrum odio rhoncus dictum. Maecenas in vestibulum tortor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Ut placerat pulvinar est, vitae eleifend ex semper a. Nam eu enim imperdiet, finibus odio at, tempor nibh.
+
+        Praesent placerat fermentum felis, quis suscipit sem gravida nec. Etiam tempor nec felis vel ornare. Morbi mollis nunc magna, sit amet laoreet nisi iaculis a. Cras non nisl ut mi ullamcorper sodales id a ipsum. Fusce auctor iaculis quam in tincidunt. Phasellus placerat, urna at sollicitudin congue, ante mauris mattis ipsum, viverra consectetur neque erat in metus. Sed id elementum dui. Duis vel nulla est. Aenean eget eleifend nunc. Donec venenatis ex vitae diam finibus tempor. Praesent molestie, felis non commodo aliquet, nunc elit dapibus ligula, nec maximus nisi ex ut odio. Fusce at ornare neque, id ultricies urna. Curabitur consequat id ex a auctor. Nunc faucibus ultricies bibendum. Cras a dui eget dolor rhoncus fringilla ac et diam.
+
+        Aenean facilisis nisi mi, pretium tempus purus rutrum id. Morbi commodo accumsan odio, eget mattis dolor aliquam quis. Vestibulum congue sem et nibh dictum, a mollis est sodales. Interdum et malesuada fames ac ante ipsum primis in faucibus. Proin elementum felis urna. Suspendisse eget diam tellus. Praesent justo augue, vestibulum ultricies malesuada id, semper vel eros. Vivamus facilisis pulvinar mi ut tincidunt. Fusce id tortor at dui accumsan suscipit. Morbi quis lorem porttitor, aliquet ligula sed, vulputate sapien. Pellentesque convallis libero eu tellus cursus vulputate. Phasellus dictum vehicula sapien sit amet porttitor. Cras scelerisque turpis nec ipsum placerat porttitor. Phasellus at maximus urna.
+
+        Fusce accumsan, purus consectetur gravida luctus, tortor leo lobortis felis, quis scelerisque magna arcu a risus. Nullam pellentesque dolor in risus ullamcorper, efficitur tempor enim congue. Vestibulum velit metus, scelerisque id dignissim non, faucibus pharetra nibh. Praesent ac cursus elit. Suspendisse commodo elit ut risus congue, non viverra mauris tincidunt. Nam semper ultricies mattis. Morbi rutrum tempor magna. Aenean faucibus purus nec neque varius lacinia vel vitae sapien. Nam sed lorem imperdiet, tincidunt tortor ut, fermentum lorem. Donec rhoncus mi et lobortis lobortis. Aenean ut faucibus dui, sed iaculis ex.
+
+        Mauris efficitur ex sit amet magna elementum rhoncus. Pellentesque non consequat ipsum. Maecenas ut bibendum arcu, ut vulputate massa. Vestibulum vitae elit id diam vestibulum sagittis. Phasellus mollis eget tellus a pretium. In eu metus mattis, elementum lacus at, tristique risus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Phasellus tempor ipsum ac magna semper, eget porta odio consectetur. Suspendisse potenti. Nulla leo ex, viverra id laoreet nec, condimentum ut magna. Vivamus lectus libero, rhoncus in accumsan vel, ornare semper nisi. Nunc scelerisque tortor orci, sed condimentum quam posuere vel. Etiam suscipit nisl magna, eu imperdiet lacus consectetur ac. Cras gravida, mi id sodales pulvinar, est risus placerat elit, eget auctor lorem dolor eget elit.
+
+        Maecenas imperdiet ultrices cursus. Ut facilisis felis sed purus efficitur cursus. Aliquam scelerisque dapibus tortor, ac porttitor leo laoreet et. Vestibulum lacinia dictum dolor nec ultricies. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Praesent quis hendrerit mauris. Nullam rhoncus bibendum lorem, id volutpat metus convallis at. Curabitur cursus in quam non porttitor. Integer et volutpat tellus. Ut viverra auctor neque, et blandit enim semper sit amet. Curabitur mollis, lorem ac vestibulum tincidunt, sapien dolor luctus purus, ac convallis neque lectus ut augue.
+
+        Curabitur ac justo eros. Nullam faucibus gravida vulputate. Mauris vitae accumsan eros, a placerat leo. Nam quis leo in velit semper mattis. Cras viverra eget purus sed sodales. Ut vulputate id tellus quis laoreet. Aenean vel arcu aliquet, fermentum elit quis, vehicula augue. Vivamus feugiat libero et lectus vestibulum, et commodo nisi fermentum. Quisque eget convallis mi. Donec odio arcu, pretium id turpis ut, posuere elementum lectus. Curabitur blandit neque ac metus pharetra, nec ullamcorper diam maximus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque ut finibus turpis. Integer sapien purus, sagittis quis tempus condimentum, pulvinar vel libero. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec eu nunc vel ipsum fringilla cursus.
+
+        Aenean consectetur quis ante eget iaculis. In nisi dolor, accumsan id accumsan sit amet, accumsan nec lectus. Fusce nisi mi, fringilla ut cursus nec, malesuada at sem. Aliquam feugiat laoreet massa at gravida. Curabitur ut mi semper, dignissim diam non, iaculis purus. Duis metus ex, ullamcorper vitae quam eu, auctor consectetur sem. Sed et laoreet metus, eget semper dui. Nunc a nisi ut nulla luctus tincidunt sed eget libero. Aenean egestas orci urna, vitae elementum ipsum aliquet ut. Cras lobortis ornare felis. Aliquam ultricies ullamcorper posuere. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Proin non dui auctor, aliquet nibh et, hendrerit eros. Vestibulum facilisis maximus diam sed volutpat.
+    </div>
 
 <!--    <div th:text="${#authentication.name}">-->
 <!--        The value of the "name" property of the authentication object should appear here.-->

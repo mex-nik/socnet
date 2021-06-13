@@ -14,51 +14,32 @@
  * limitations under the License.
  */
 
-package mx.demo.socnet.data.entity;
+package mx.demo.socnet.util;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.sql.Date;
+import mx.demo.socnet.data.entity.UserData;
+import mx.demo.socnet.data.entity.UserPost;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Mladen Nikolic <mladen.nikolic.mex@gmail.com>
  * https://www.linkedin.com/in/mladen-nikolic-mex/
- * @created 05.06.2021
+ * @created 08.06.2021
  * @project socnet
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-@Table
-@JsonSerialize
-public class UserPost {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    private UserData user;
-    private String post;
-    private Date published;
+
+@Component
+public class StringToUserPostConverter implements Converter<String, UserPost> {
 
     @Override
-    public String toString() {
+    public UserPost convert(String userPost) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            return mapper.writeValueAsString(this);
+            return mapper.readValue(userPost, UserPost.class);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
         }
-        return super.toString();
+        return null;
     }
-
 }

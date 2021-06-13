@@ -30,7 +30,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/">SocNet Directory</a>
+        <a class="navbar-brand" href="/">SocNet</a>
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="/">Home</a>
@@ -59,7 +59,13 @@
                 <h1 >No posts</h1>
             </div>
             <div class="card  mb-3" th:each="post: ${user.posts}" th:if="${user.posts.size > 0}" >
-                <div class="card-header" th:text="${post.published}"/>
+                <div class="card-header">
+                    <form th:action="@{/postDelete}" method="POST" >
+                        <input type="hidden" th:value="${post}" th:name="post">
+                        <button type="submit" class="btn-close" aria-label="Close"></button>
+                    </form>
+                    <span th:text="${post.published}"/>
+                </div>
                 <div class="card-body" th:text="${post.post}"/>
             </div>
         </div>

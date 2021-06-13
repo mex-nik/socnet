@@ -1,5 +1,5 @@
 create table user_data (
-	id INT,
+	id INT auto_increment,
 	first_name VARCHAR(50),
 	last_name VARCHAR(50),
 	email VARCHAR(50),
@@ -10,7 +10,7 @@ create table user_data (
 );
 
 create table user_post (
-	id INT,
+	id INT auto_increment,
 	user_id INT,
 	post TEXT,
 	published DATETIME
