@@ -57,8 +57,9 @@ public class UserPostController {
             HttpSession httpSession,
             Model model,
             @ModelAttribute("postText") Optional<String> postText) {
+        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
+        model.addAttribute("userLogin", loggedInUser);
        if (postText.isPresent() && !postText.get().strip().isEmpty()){
-            UserData loggedInUser = (UserData) httpSession.getAttribute("user");
             model.addAttribute("user", loggedInUser);
             UserPost post = new UserPost();
             post.setPost(postText.get());
@@ -75,13 +76,13 @@ public class UserPostController {
     public String deletePost(
             HttpSession httpSession,
             Model model,
-            @ModelAttribute("post") UserPost post) {
-        if (post != null) {
-            UserData loggedInUser = (UserData) httpSession.getAttribute("user");
-            boolean removed = loggedInUser.getPosts().removeIf(post1 -> (post.getId().longValue() == post1.getId().longValue()));
-            model.addAttribute("user", loggedInUser);
-            userPostRepository.delete(post);
-        }
+            @ModelAttribute("post") UserPost post,
+            @ModelAttribute("user") UserData user) {
+        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
+        model.addAttribute("userLogin", loggedInUser);
+        user.getPosts().removeIf(post1 -> (post.getId().longValue() == post1.getId().longValue()));
+        model.addAttribute("user", user);
+        userPostRepository.delete(post);
         return "user";
     }
 }

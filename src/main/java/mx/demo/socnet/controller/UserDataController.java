@@ -73,7 +73,8 @@ public class UserDataController {
             HttpSession httpSession,
             Model model,
             @ModelAttribute("user") UserData user) {
-
+        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
+        model.addAttribute("userLogin", loggedInUser);
         return "user";
     }
 
@@ -82,11 +83,14 @@ public class UserDataController {
             HttpSession httpSession,
             Model model,
             @RequestParam("userId") Optional<Long> userId) {
+        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
+        model.addAttribute("userLogin", loggedInUser);
+
         UserData user;
         if (userId.isPresent()) {
             user = userDataService.getUser(userId.get());
         } else {
-            user = (UserData) httpSession.getAttribute("user");
+            user = loggedInUser;
         }
         model.addAttribute("user", user);
         return "user";

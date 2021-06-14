@@ -60,11 +60,18 @@
             </div>
             <div class="card  mb-3" th:each="post: ${user.posts}" th:if="${user.posts.size > 0}" >
                 <div class="card-header">
-                    <form th:action="@{/postDelete}" method="POST" >
-                        <input type="hidden" th:value="${post}" th:name="post">
-                        <button type="submit" class="btn-close" aria-label="Close"></button>
-                    </form>
-                    <span th:text="${post.published}"/>
+                    <div class="row justify-content-start">
+                        <div class="col-1" th:if="((${user.id} == ${userLogin.id}) or (${userLogin.role.authority} == 'admin'))">
+                            <form th:action="@{/postDelete}" method="POST">
+                                <input type="hidden" th:value="${user}" th:name="user">
+                                <input type="hidden" th:value="${post}" th:name="post">
+                                <button type="submit" class="btn-close" aria-label="Close"></button>
+                            </form>
+                        </div>
+                        <div class="col-3">
+                            <span style="position:relative;top: 5px;" th:text="${post.published}" />
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body" th:text="${post.post}"/>
             </div>
