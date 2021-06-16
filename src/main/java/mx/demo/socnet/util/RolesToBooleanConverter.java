@@ -29,6 +29,6 @@ import mx.demo.socnet.data.entity.Roles;
 public class RolesToBooleanConverter extends StdConverter<Roles, Boolean> {
     @Override
     public Boolean convert(Roles roles) {
-        return roles.equals(Roles.ADMIN);
+        return roles.getAuthority().equals(Roles.ADMIN);
     }
 }

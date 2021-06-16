@@ -16,6 +16,8 @@
 
 package mx.demo.socnet.controller;
 
+import lombok.extern.slf4j.Slf4j;
+import mx.demo.socnet.data.entity.Roles;
 import mx.demo.socnet.data.entity.UserData;
 import mx.demo.socnet.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,6 +41,7 @@ import java.util.stream.IntStream;
  * @project socnet
  */
 
+@Slf4j
 @Controller
 @RequestMapping
 public class UserDataController {
@@ -95,6 +99,87 @@ public class UserDataController {
         model.addAttribute("user", user);
         return "user";
     }
+
+    @GetMapping("/edituser")
+    public String editUserDataGet(
+            HttpSession httpSession,
+            Model model,
+            @ModelAttribute("user") Optional<UserData> user,
+            @ModelAttribute("firstname") Optional<String> firstname,
+            @ModelAttribute("lastname") Optional<String> lastname,
+            @ModelAttribute("email") Optional<String> email,
+            @ModelAttribute("password") Optional<String> password,
+            @ModelAttribute("gender") Optional<String> gender,
+            @ModelAttribute("country") Optional<String> country,
+            @ModelAttribute("admin") Optional<String> admin) {
+        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
+        model.addAttribute("userLogin", loggedInUser);
+
+        UserData userData;
+        if (user.isPresent()) {
+            userData = user.get();
+        } else {
+            userData = loggedInUser;
+        }
+        model.addAttribute("user", loggedInUser);
+//        userDataService.
+        return "edituser";
+    }
+
+    @PostMapping("/edituser")
+    public String editUserDataPost(
+            HttpSession httpSession,
+            Model model,
+            @ModelAttribute("user") UserData user,
+            @ModelAttribute("id") Optional<Long> id,
+            @ModelAttribute("firstname") Optional<String> firstname,
+            @ModelAttribute("lastname") Optional<String> lastname,
+            @ModelAttribute("email") Optional<String> email,
+            @ModelAttribute("password") Optional<String> password,
+            @ModelAttribute("gender") Optional<String> gender,
+            @ModelAttribute("country") Optional<String> country,
+            @ModelAttribute("role") Optional<String> role) {
+        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
+        model.addAttribute("userLogin", loggedInUser);
+        if (id.isPresent()) {
+            user.setId(id.get());
+        }
+        if (firstname.isPresent()) {
+            user.setFirstName(firstname.get());
+        }
+        if (lastname.isPresent()) {
+            user.setLastName(lastname.get());
+        }
+        if (email.isPresent()) {
+            user.setEmail(email.get());
+        }
+        if (password.isPresent()) {
+            user.setPassword(password.get());
+        }
+        if (gender.isPresent()) {
+            user.setGender(gender.get());
+        }
+        if (country.isPresent()) {
+            user.setCountry(country.get());
+        }
+        if (role.isPresent()) {
+            user.setRole(new Roles(role.get()));
+        }
+        if (loggedInUser.getId().longValue() == user.getId().longValue()) {
+            user.setPosts(loggedInUser.getPosts());
+        } else {
+            user.setPosts(new ArrayList<>());
+        }
+
+        UserData updatedUser = userDataService.updateUser(user);
+
+        if (loggedInUser.getId().longValue() == updatedUser.getId().longValue()) {
+            httpSession.setAttribute("user", updatedUser);
+        }
+        model.addAttribute("user", updatedUser);
+        return "edituser";
+    }
+
 
     @GetMapping("/")
     public String getUser(HttpSession httpSession, Model model) {

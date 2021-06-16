@@ -32,19 +32,19 @@
     <div class="container-fluid">
         <a class="navbar-brand" href="/">SocNet</a>
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/directory">Directory</a>
-            </li>
+<!--            <li class="nav-item">-->
+<!--                <a class="nav-link active" aria-current="page" href="/">Home</a>-->
+<!--            </li>-->
+<!--            <li class="nav-item">-->
+<!--                <a class="nav-link active" aria-current="page" href="/directory">Directory</a>-->
+<!--            </li>-->
         </ul>
     </div>
 </nav>
 <div class="container" style="min-height: 850px;">
 
 <!--    <div class="col-md-4 position-relative">-->
-        <div class="card  mb-3" >
+        <div class="card  mb-3" style="position:relative;top: 20px;" >
             <div class="card-header">Login</div>
             <div class="card-body">
                 <div th:if="${param.error}" class="alert alert-danger" role="alert" >
@@ -54,14 +54,14 @@
                     You have been logged out.
                 </div>
                 <form th:action="@{/login}" method="POST">
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="email">email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                    <input type="text" class="form-control" placeholder="email" aria-label="email" aria-describedby="basic-user" name="email" >
-                </div>
-                <div class="input-group mb-3">
-                    <span class="input-group-text" id="password">password</span>
-                    <input type="password" class="form-control" placeholder="password" aria-label="password" aria-describedby="basic-password" name="password">
-                </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="email">email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        <input type="text" class="form-control" placeholder="email" aria-label="email" aria-describedby="basic-user" name="email" >
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="password">password</span>
+                        <input type="password" class="form-control" placeholder="password" aria-label="password" aria-describedby="basic-password" name="password">
+                    </div>
                     <button class="btn btn-light" type="submit">Submit</button>
                 </form>
             </div>

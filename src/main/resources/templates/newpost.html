@@ -38,13 +38,20 @@
             <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="/directory">Directory</a>
             </li>
+            <li class="nav-item">
+                <a  class="nav-link active" aria-current="page" th:href="@{/user}">My posts</a>
+            </li>
+
+            <li class="nav-item">
+                <a  class="nav-link active" aria-current="page" th:href="@{/edituser}">Change my data</a>
+            </li>
         </ul>
     </div>
 </nav>
 <div class="container" style="min-height: 850px;">
 
 <!--    <div class="col-md-4 position-relative">-->
-        <div class="card  mb-3" >
+        <div class="card  mb-3" style="position:relative;top: 20px;" >
             <div class="card-header">New Post</div>
             <div class="card-body">
                 <form th:action="@{/postAdd}" method="POST">

@@ -39,6 +39,12 @@
                 <a class="nav-link active" aria-current="page" href="/directory">Directory</a>
             </li>
             <li class="nav-item">
+                <a  class="nav-link active" aria-current="page" th:href="@{/newpost}">New post</a>
+            </li>
+            <li class="nav-item">
+                <a  class="nav-link active" aria-current="page" th:href="@{/edituser}">Change my data</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link active" href="/login?logout">Logout</a>
             </li>
         </ul>
@@ -46,7 +52,7 @@
 </nav>
 <div class="container" style="min-height: 850px;">
     <div class="row">
-        <div class="col-md-4 position-relative">
+        <div class="col-md-4 position-relative" style="position:relative;top: 20px;">
             <div class="card  mb-3" >
                 <div class="card-header" th:text="${user.firstName} + ' ' + ${user.lastName}"/>
                 <div class="card-body" th:text="${user.email}" th:title="${user.password}"/>
@@ -54,7 +60,7 @@
                 <span class="card-body" th:text="${user.country}"/>
             </div>
         </div>
-        <div class="col-lg-8 position-relative">
+        <div class="col-lg-8 position-relative" style="position:relative;top: 20px;" >
             <div th:if="${user.posts.size == 0}">
                 <h1 >No posts</h1>
             </div>
