@@ -104,7 +104,7 @@ public class UserDataController {
     public String editUserDataGet(
             HttpSession httpSession,
             Model model,
-            @ModelAttribute("user") Optional<UserData> user,
+            @RequestParam("user") Optional<UserData> user,
             @RequestParam(value = "new", required = false, defaultValue = "false") boolean isNew) {
         UserData loggedInUser = (UserData) httpSession.getAttribute("user");
         model.addAttribute("userLogin", loggedInUser);
@@ -118,7 +118,7 @@ public class UserDataController {
         if (isNew) {
             model.addAttribute("user", new UserData());
         } else {
-            model.addAttribute("user", loggedInUser);
+            model.addAttribute("user", userData);
         }
 //        userDataService.
         return "edituser";

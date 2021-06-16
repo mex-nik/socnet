@@ -60,7 +60,7 @@
                 <td width="25%">Name</td>
                 <td width="25%">Surname</td>
                 <td width="25%">Email</td>
-                <td align="center" width="25%" colspan="2">Actions</td>
+                <td align="center" width="25%" colspan="3">Actions</td>
             </tr>
         </thead>
         <tr th:each="userdata: ${userdatas}" th:if="${userdata.id} != ${user.id}">
@@ -68,9 +68,15 @@
             <td th:text="${userdata.lastName}">Surname</td>
             <td th:text="${userdata.email}" th:title="${userdata.password}">Email</td>
             <td>
+                <form method="GET" th:action="@{/edituser}">
+                    <button  class="btn btn-light" type="submit" th:name="user" th:value="${userdata}">edit</button>
+                </form>
+            </td>
+            <td>
                 <form method="POST" th:action="@{/user}">
                     <button  class="btn btn-light" type="submit" th:name="user" th:value="${userdata}">posts</button>
                 </form>
+            </td>
 <!--                <a th:href="@{'/userDatas/' + ${userdata.id} + '/posts'}">Posts</a></td>-->
             <td><a th:href="@{'/userDatas/' + ${userdata.id}}">Chat</a></td>
         </tr>
