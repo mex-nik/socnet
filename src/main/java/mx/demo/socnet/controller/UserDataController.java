@@ -105,13 +105,7 @@ public class UserDataController {
             HttpSession httpSession,
             Model model,
             @ModelAttribute("user") Optional<UserData> user,
-            @ModelAttribute("firstname") Optional<String> firstname,
-            @ModelAttribute("lastname") Optional<String> lastname,
-            @ModelAttribute("email") Optional<String> email,
-            @ModelAttribute("password") Optional<String> password,
-            @ModelAttribute("gender") Optional<String> gender,
-            @ModelAttribute("country") Optional<String> country,
-            @ModelAttribute("admin") Optional<String> admin) {
+            @RequestParam(value = "new", required = false, defaultValue = "false") boolean isNew) {
         UserData loggedInUser = (UserData) httpSession.getAttribute("user");
         model.addAttribute("userLogin", loggedInUser);
 
@@ -121,7 +115,11 @@ public class UserDataController {
         } else {
             userData = loggedInUser;
         }
-        model.addAttribute("user", loggedInUser);
+        if (isNew) {
+            model.addAttribute("user", new UserData());
+        } else {
+            model.addAttribute("user", loggedInUser);
+        }
 //        userDataService.
         return "edituser";
     }

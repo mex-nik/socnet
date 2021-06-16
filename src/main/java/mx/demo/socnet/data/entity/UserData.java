@@ -47,7 +47,7 @@ import java.util.List;
 public class UserData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id = 0L;
     private String firstName;
     private String lastName;
     private String email;
@@ -55,7 +55,7 @@ public class UserData {
     @JsonDeserialize(converter = BooleanToRolesConverter.class)
     @Convert(converter = RolesConverter.class)
     @Column(name = "admin")
-    private Roles role;
+    private Roles role = new Roles(Roles.REGULAR);
     private String gender;
     private String country;
     private String password;
