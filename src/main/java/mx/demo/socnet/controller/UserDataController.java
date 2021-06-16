@@ -170,6 +170,14 @@ public class UserDataController {
         }
 
         UserData updatedUser = userDataService.updateUser(user);
+        if (updatedUser == null) {
+            model.addAttribute("error", true);
+            model.addAttribute("success", false);
+            return "edituser";
+        }
+
+        model.addAttribute("success", true);
+        model.addAttribute("error", false);
 
         if (loggedInUser.getId().longValue() == updatedUser.getId().longValue()) {
             httpSession.setAttribute("user", updatedUser);

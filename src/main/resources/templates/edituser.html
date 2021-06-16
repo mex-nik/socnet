@@ -44,6 +44,9 @@
             <li class="nav-item">
                 <a  class="nav-link active" aria-current="page" th:href="@{/newpost}">New post</a>
             </li>
+            <li class="nav-item" th:if="!${param.new}">
+                <a  class="nav-link active" aria-current="page" th:href="@{/edituser?new=true}">Add user</a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link active" href="/login?logout">Logout</a>
             </li>
@@ -51,6 +54,12 @@
     </div>
 </nav>
 <div class="container" style="min-height: 850px;">
+    <div th:if="${error}" class="alert alert-danger" role="alert" >
+        Problems while saving data.
+    </div>
+    <div th:if="${success}" class="alert alert-info" role="alert">
+        Successfully saved data.
+    </div>
     <div class="row" style="position:relative;top: 20px;" >
         <div class="card">
             <div class="card-header">User Data</div>
