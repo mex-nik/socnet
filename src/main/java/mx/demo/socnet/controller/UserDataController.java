@@ -63,7 +63,7 @@ public class UserDataController {
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
         UserData loggedInUser = (UserData) httpSession.getAttribute("user");
-        model.addAttribute("user", loggedInUser);
+        model.addAttribute("userLogin", loggedInUser);
 
         Page<UserData> userData = userDataService.getUsersPage(page.orElse(0), size.orElse(pageSize));
         model.addAttribute("userdatas", userData);

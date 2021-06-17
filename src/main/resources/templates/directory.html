@@ -63,11 +63,11 @@
                 <td align="center" width="25%" colspan="3">Actions</td>
             </tr>
         </thead>
-        <tr th:each="userdata: ${userdatas}" th:if="${userdata.id} != ${user.id}">
+        <tr th:each="userdata: ${userdatas}" th:if="${userdata.id} != ${userLogin.id}">
             <td th:text="${userdata.firstName}">Name</td>
             <td th:text="${userdata.lastName}">Surname</td>
             <td th:text="${userdata.email}" th:title="${userdata.password}">Email</td>
-            <td>
+            <td th:if="(${userLogin.role.authority} == 'admin')">
                 <form method="GET" th:action="@{/edituser}">
                     <button  class="btn btn-light" type="submit" th:name="user" th:value="${userdata}">edit</button>
                 </form>
