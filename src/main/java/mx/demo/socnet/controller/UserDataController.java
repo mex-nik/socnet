@@ -186,6 +186,27 @@ public class UserDataController {
         return "edituser";
     }
 
+    @GetMapping("deleteUser")
+    public String deleteUser(
+            HttpSession httpSession,
+            Model model,
+            @RequestParam(value = "userId", required = true) Long userId,
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size) {
+        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
+        model.addAttribute("userLogin", loggedInUser);
+        if (loggedInUser.getRole().getAuthority() == Roles.ADMIN) {
+            userDataService.deleteUserById(userId);
+        }
+
+        Page<UserData> userData = userDataService.getUsersPage(page.orElse(0), size.orElse(pageSize));
+        model.addAttribute("userdatas", userData);
+
+        model.addAttribute("pageNumbers", pageNumbers(userData.getTotalPages()));
+
+        return "directory";
+    }
+
 
     @GetMapping("/")
     public String getUser(HttpSession httpSession, Model model) {

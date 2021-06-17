@@ -72,6 +72,9 @@
                     <button  class="btn btn-light" type="submit" th:name="user" th:value="${userdata}">edit</button>
                 </form>
             </td>
+            <td th:if="(${userLogin.role.authority} == 'admin')">
+                <a th:href="@{/deleteUser(userId=${userdata.id}, size=${param.size}, page=${param.page})}">delete</a>
+            </td>
             <td>
                 <form method="POST" th:action="@{/user}">
                     <button  class="btn btn-light" type="submit" th:name="user" th:value="${userdata}">posts</button>

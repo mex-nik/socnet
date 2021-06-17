@@ -65,4 +65,8 @@ public class UserDataService {
         return userDataRepository.save(userData);
     }
 
+    public void deleteUserById(Long id) {
+        userDataRepository.deleteById(id);
+    }
+
 }
