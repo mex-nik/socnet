@@ -73,14 +73,13 @@
                 </form>
             </td>
             <td th:if="(${session.user.role.authority} == 'admin')">
-                <a th:href="@{/deleteUser(userId=${userdata.id}, size=${param.size}, page=${param.page})}">delete</a>
+                <a class="btn btn-light" th:href="@{/deleteUser(userId=${userdata.id}, size=${param.size}, page=${param.page})}">delete</a>
             </td>
             <td>
                 <form method="POST" th:action="@{/user}">
                     <button  class="btn btn-light" type="submit" th:name="user" th:value="${userdata}">posts</button>
                 </form>
             </td>
-<!--                <a th:href="@{'/userDatas/' + ${userdata.id} + '/posts'}">Posts</a></td>-->
             <td><a th:href="@{'/userDatas/' + ${userdata.id}}">Chat</a></td>
         </tr>
     </table>
