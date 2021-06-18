@@ -52,36 +52,28 @@ public class UserPostController {
         this.userPostRepository = userPostRepository;
     }
 
-    @PostMapping("/postAdd")
+    @PostMapping("/addPost")
     public String addPost(
             HttpSession httpSession,
             Model model,
-            @ModelAttribute("postText") Optional<String> postText) {
+            @ModelAttribute("newpost") UserPost userPost) {
         UserData loggedInUser = (UserData) httpSession.getAttribute("user");
-        model.addAttribute("userLogin", loggedInUser);
-       if (postText.isPresent() && !postText.get().strip().isEmpty()){
+       if (!userPost.getPost().strip().isEmpty()){
             model.addAttribute("user", loggedInUser);
-            UserPost post = new UserPost();
-            post.setPost(postText.get());
-            post.setPublished(new Date(Calendar.getInstance().getTimeInMillis()));
-            post.setUser(loggedInUser);
-            loggedInUser.getPosts().add(post);
-            userPostRepository.save(post);
+            loggedInUser.getPosts().add(0, userPost);
+            userPostRepository.save(userPost);
         }
         return "user";
     }
 
 
-    @PostMapping("/postDelete")
+    @PostMapping("/deletePost")
     public String deletePost(
             HttpSession httpSession,
             Model model,
-            @ModelAttribute("post") UserPost post,
-            @ModelAttribute("user") UserData user) {
-        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
-        model.addAttribute("userLogin", loggedInUser);
-        user.getPosts().removeIf(post1 -> (post.getId().longValue() == post1.getId().longValue()));
-        model.addAttribute("user", user);
+            @ModelAttribute("post") UserPost post) {
+        post.getUser().getPosts().removeIf(post1 -> (post.getId().longValue() == post1.getId().longValue()));
+        model.addAttribute("user", post.getUser());
         userPostRepository.delete(post);
         return "user";
     }

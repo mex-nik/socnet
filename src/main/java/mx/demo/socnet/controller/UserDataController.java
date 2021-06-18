@@ -107,20 +107,13 @@ public class UserDataController {
             @RequestParam("user") Optional<UserData> user,
             @RequestParam(value = "new", required = false, defaultValue = "false") boolean isNew) {
         UserData loggedInUser = (UserData) httpSession.getAttribute("user");
-        model.addAttribute("userLogin", loggedInUser);
+        UserData userData = user.orElse(loggedInUser);
 
-        UserData userData;
-        if (user.isPresent()) {
-            userData = user.get();
-        } else {
-            userData = loggedInUser;
-        }
         if (isNew) {
             model.addAttribute("user", new UserData());
         } else {
             model.addAttribute("user", userData);
         }
-//        userDataService.
         return "edituser";
     }
 
@@ -128,41 +121,8 @@ public class UserDataController {
     public String editUserDataPost(
             HttpSession httpSession,
             Model model,
-            @ModelAttribute("user") UserData user,
-            @ModelAttribute("id") Optional<Long> id,
-            @ModelAttribute("firstname") Optional<String> firstname,
-            @ModelAttribute("lastname") Optional<String> lastname,
-            @ModelAttribute("email") Optional<String> email,
-            @ModelAttribute("password") Optional<String> password,
-            @ModelAttribute("gender") Optional<String> gender,
-            @ModelAttribute("country") Optional<String> country,
-            @ModelAttribute("role") Optional<String> role) {
+            @ModelAttribute("user") UserData user) {
         UserData loggedInUser = (UserData) httpSession.getAttribute("user");
-        model.addAttribute("userLogin", loggedInUser);
-        if (id.isPresent()) {
-            user.setId(id.get());
-        }
-        if (firstname.isPresent()) {
-            user.setFirstName(firstname.get());
-        }
-        if (lastname.isPresent()) {
-            user.setLastName(lastname.get());
-        }
-        if (email.isPresent()) {
-            user.setEmail(email.get());
-        }
-        if (password.isPresent()) {
-            user.setPassword(password.get());
-        }
-        if (gender.isPresent()) {
-            user.setGender(gender.get());
-        }
-        if (country.isPresent()) {
-            user.setCountry(country.get());
-        }
-        if (role.isPresent()) {
-            user.setRole(new Roles(role.get()));
-        }
         if (loggedInUser.getId().longValue() == user.getId().longValue()) {
             user.setPosts(loggedInUser.getPosts());
         } else {
@@ -190,11 +150,10 @@ public class UserDataController {
     public String deleteUser(
             HttpSession httpSession,
             Model model,
-            @RequestParam(value = "userId", required = true) Long userId,
+            @RequestParam(value = "userId") Long userId,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
         UserData loggedInUser = (UserData) httpSession.getAttribute("user");
-        model.addAttribute("userLogin", loggedInUser);
         if (loggedInUser.getRole().getAuthority() == Roles.ADMIN) {
             userDataService.deleteUserById(userId);
         }
@@ -210,8 +169,6 @@ public class UserDataController {
 
     @GetMapping("/")
     public String getUser(HttpSession httpSession, Model model) {
-        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
-        model.addAttribute("userLogin", loggedInUser);
         return "home";
     }
 

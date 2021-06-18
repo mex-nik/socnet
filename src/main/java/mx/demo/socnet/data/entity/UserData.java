@@ -61,6 +61,7 @@ public class UserData {
     private String password;
     @JsonManagedReference
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OrderBy("published DESC")
     private List<UserPost> posts;
 
     @Override

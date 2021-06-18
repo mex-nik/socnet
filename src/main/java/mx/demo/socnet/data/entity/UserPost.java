@@ -26,6 +26,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.Calendar;
 
 /**
  * @author Mladen Nikolic <mladen.nikolic.mex@gmail.com>
@@ -48,7 +49,7 @@ public class UserPost {
     @JoinColumn(name = "userId")
     private UserData user;
     private String post;
-    private Date published;
+    private Date published = new Date(Calendar.getInstance().getTimeInMillis());
 
     @Override
     public String toString() {

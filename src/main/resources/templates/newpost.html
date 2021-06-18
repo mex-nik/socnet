@@ -56,10 +56,11 @@
         <div class="card  mb-3" style="position:relative;top: 20px;" >
             <div class="card-header">New Post</div>
             <div class="card-body">
-                <form th:action="@{/postAdd}" method="POST">
+                <form th:action="@{/addPost}" method="POST">
+                    <input type="hidden" th:value="${session.user}" name="user">
                     <div class="input-group">
                         <span class="input-group-text">Enter post</span>
-                        <textarea class="form-control" aria-label="postText" name="postText"></textarea>
+                        <textarea class="form-control" aria-label="postText" name="post"></textarea>
                     </div>
                     <button class="btn btn-light" type="submit">Submit</button>
                 </form>

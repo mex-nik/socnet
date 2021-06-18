@@ -68,11 +68,11 @@
                 <input type="hidden" th:value="${user.id}" th:name="id">
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="firstname">First Name</span>
-                    <input type="text" class="form-control" placeholder="First Name" aria-label="firstname" name="firstname" th:value="${user.firstName}" />
+                    <input type="text" class="form-control" placeholder="First Name" aria-label="firstname" name="firstName" th:value="${user.firstName}" />
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="lastname">Last Name</span>
-                    <input type="text" class="form-control" placeholder="Last Name" aria-label="lastname" name="lastname" th:value="${user.lastName}" />
+                    <input type="text" class="form-control" placeholder="Last Name" aria-label="lastname" name="lastName" th:value="${user.lastName}" />
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="email">E-mail&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -90,7 +90,7 @@
                     <span class="input-group-text" id="country">Country&nbsp;&nbsp;&nbsp;</span>
                     <input type="text" class="form-control" placeholder="Country" aria-label="country" name="country" th:value="${user.country}" />
                 </div>
-                <div class="input-group mb-3" th:if="(${userLogin.role.authority} == 'admin')">
+                <div class="input-group mb-3" th:if="(${session.user.role.authority} == 'admin')">
                     <span class="input-group-text" id="role">Role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                     <select class="form-select" aria-label="Default select example" name="role">
                         <option value="regular" th:selected="${user.role.authority} != 'admin'">Regular</option>
