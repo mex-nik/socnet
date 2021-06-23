@@ -16,6 +16,7 @@
 
 package mx.demo.socnet.config;
 
+import mx.demo.socnet.data.entity.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,6 +50,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
+                .antMatchers("/deleteUser").hasAnyRole(Roles.ADMIN)
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

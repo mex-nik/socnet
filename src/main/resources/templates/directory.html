@@ -42,10 +42,10 @@
                 <a  class="nav-link active" aria-current="page" th:href="@{/newpost}">New post</a>
             </li>
             <li class="nav-item">
-                <a  class="nav-link active" aria-current="page" th:href="@{/edituser}">Change my data</a>
+                <a  class="nav-link active" aria-current="page" th:href="@{/editUser}">Change my data</a>
             </li>
             <li class="nav-item">
-                <a  class="nav-link active" aria-current="page" th:href="@{/edituser?new=true}">Add user</a>
+                <a  class="nav-link active" aria-current="page" th:href="@{/editUser?new=true}">Add user</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active" href="/login?logout">Logout</a>
@@ -68,7 +68,7 @@
             <td th:text="${userdata.lastName}">Surname</td>
             <td th:text="${userdata.email}" th:title="${userdata.password}">Email</td>
             <td th:if="(${session.user.role.authority} == 'admin')">
-                <form method="GET" th:action="@{/edituser}">
+                <form method="GET" th:action="@{/editUser}">
                     <button  class="btn btn-light" type="submit" th:name="user" th:value="${userdata}">edit</button>
                 </form>
             </td>

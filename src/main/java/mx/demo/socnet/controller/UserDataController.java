@@ -23,9 +23,11 @@ import mx.demo.socnet.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -56,14 +58,17 @@ public class UserDataController {
         this.userDataService = userDataService;
     }
 
+    @GetMapping("/")
+    public String getUser(HttpSession httpSession, Model model) {
+        return "home";
+    }
+
     @GetMapping("/directory")
     public String listUsers(
             HttpSession httpSession,
             Model model,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
-        model.addAttribute("userLogin", loggedInUser);
 
         Page<UserData> userData = userDataService.getUsersPage(page.orElse(0), size.orElse(pageSize));
         model.addAttribute("userdatas", userData);
@@ -72,35 +77,28 @@ public class UserDataController {
         return "directory";
     }
 
-    @PostMapping("/user")
-    public String userDataPost(
-            HttpSession httpSession,
-            Model model,
-            @ModelAttribute("user") UserData user) {
-        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
-        model.addAttribute("userLogin", loggedInUser);
-        return "user";
-    }
-
     @GetMapping("/user")
     public String userDataGet(
             HttpSession httpSession,
             Model model,
             @RequestParam("userId") Optional<Long> userId) {
-        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
-        model.addAttribute("userLogin", loggedInUser);
-
-        UserData user;
+        UserData user = (UserData) httpSession.getAttribute("user");
         if (userId.isPresent()) {
             user = userDataService.getUser(userId.get());
-        } else {
-            user = loggedInUser;
         }
         model.addAttribute("user", user);
         return "user";
     }
 
-    @GetMapping("/edituser")
+    @PostMapping("/user")
+    public String userDataPost(
+            HttpSession httpSession,
+            Model model,
+            @ModelAttribute("user") UserData user) {
+        return "user";
+    }
+
+    @GetMapping("/editUser")
     public String editUserDataGet(
             HttpSession httpSession,
             Model model,
@@ -117,7 +115,7 @@ public class UserDataController {
         return "edituser";
     }
 
-    @PostMapping("/edituser")
+    @PostMapping("/editUser")
     public String editUserDataPost(
             HttpSession httpSession,
             Model model,
@@ -153,10 +151,8 @@ public class UserDataController {
             @RequestParam(value = "userId") Long userId,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
-        if (loggedInUser.getRole().getAuthority() == Roles.ADMIN) {
-            userDataService.deleteUserById(userId);
-        }
+
+        userDataService.deleteUserById(userId);
 
         Page<UserData> userData = userDataService.getUsersPage(page.orElse(0), size.orElse(pageSize));
         model.addAttribute("userdatas", userData);
@@ -164,12 +160,6 @@ public class UserDataController {
         model.addAttribute("pageNumbers", pageNumbers(userData.getTotalPages()));
 
         return "directory";
-    }
-
-
-    @GetMapping("/")
-    public String getUser(HttpSession httpSession, Model model) {
-        return "home";
     }
 
     private List<Integer> pageNumbers(int totalPages) {

@@ -23,15 +23,11 @@ import mx.demo.socnet.data.repository.UserPostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpSession;
-import java.sql.Date;
-import java.util.Calendar;
-import java.util.Optional;
 
 /**
  * @author Mladen Nikolic <mladen.nikolic.mex@gmail.com>

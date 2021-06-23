@@ -45,7 +45,7 @@
                 <a  class="nav-link active" aria-current="page" th:href="@{/newpost}">New post</a>
             </li>
             <li class="nav-item" th:if="!${param.new}">
-                <a  class="nav-link active" aria-current="page" th:href="@{/edituser?new=true}">Add user</a>
+                <a  class="nav-link active" aria-current="page" th:href="@{/editUser?new=true}">Add user</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active" href="/login?logout">Logout</a>
@@ -64,7 +64,7 @@
         <div class="card">
             <div class="card-header">User Data</div>
             <div class="card-body">
-            <form th:action="@{/edituser}" method="POST">
+            <form th:action="@{/editUser}" method="POST">
                 <input type="hidden" th:value="${user.id}" th:name="id">
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="firstname">First Name</span>
