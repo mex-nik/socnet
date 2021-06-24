@@ -23,14 +23,12 @@ import mx.demo.socnet.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -98,20 +96,30 @@ public class UserDataController {
         return "user";
     }
 
+    @GetMapping("/newUser")
+    public String newUserDataGet(
+            HttpSession httpSession,
+            Model model) {
+
+        model.addAttribute("user", new UserData());
+
+        return "edituser";
+    }
+
     @GetMapping("/editUser")
     public String editUserDataGet(
             HttpSession httpSession,
             Model model,
-            @RequestParam("user") Optional<UserData> user,
-            @RequestParam(value = "new", required = false, defaultValue = "false") boolean isNew) {
+            @RequestParam("user") Optional<UserData> user) {
         UserData loggedInUser = (UserData) httpSession.getAttribute("user");
         UserData userData = user.orElse(loggedInUser);
 
-        if (isNew) {
-            model.addAttribute("user", new UserData());
-        } else {
-            model.addAttribute("user", userData);
+        if (!loggedInUser.getRole().getAuthority().equals(Roles.ADMIN) && loggedInUser.getId().longValue() != userData.getId().longValue()) {
+            throw new AccessDeniedException("Not permissions to edit user");
         }
+
+        model.addAttribute("user", userData);
+
         return "edituser";
     }
 
@@ -121,26 +129,20 @@ public class UserDataController {
             Model model,
             @ModelAttribute("user") UserData user) {
         UserData loggedInUser = (UserData) httpSession.getAttribute("user");
-        if (loggedInUser.getId().longValue() == user.getId().longValue()) {
-            user.setPosts(loggedInUser.getPosts());
-        } else {
-            user.setPosts(new ArrayList<>());
+        if (!loggedInUser.getRole().getAuthority().equals(Roles.ADMIN) && loggedInUser.getId().longValue() != user.getId().longValue()) {
+            throw new AccessDeniedException("Not permissions to edit user");
         }
-
         UserData updatedUser = userDataService.updateUser(user);
         if (updatedUser == null) {
             model.addAttribute("error", true);
-            model.addAttribute("success", false);
-            return "edituser";
-        }
+        } else {
+            model.addAttribute("success", true);
 
-        model.addAttribute("success", true);
-        model.addAttribute("error", false);
-
-        if (loggedInUser.getId().longValue() == updatedUser.getId().longValue()) {
-            httpSession.setAttribute("user", updatedUser);
+            if (loggedInUser.getId().longValue() == updatedUser.getId().longValue()) {
+                httpSession.setAttribute("user", updatedUser);
+            }
+            model.addAttribute("user", updatedUser);
         }
-        model.addAttribute("user", updatedUser);
         return "edituser";
     }
 

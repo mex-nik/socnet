@@ -45,7 +45,7 @@
                 <a  class="nav-link active" aria-current="page" th:href="@{/newpost}">New post</a>
             </li>
             <li class="nav-item" th:if="!${param.new}">
-                <a  class="nav-link active" aria-current="page" th:href="@{/editUser?new=true}">Add user</a>
+                <a  class="nav-link active" aria-current="page" th:href="@{/newUser}">Add user</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active" href="/login?logout">Logout</a>
@@ -64,31 +64,36 @@
         <div class="card">
             <div class="card-header">User Data</div>
             <div class="card-body">
-            <form th:action="@{/editUser}" method="POST">
-                <input type="hidden" th:value="${user.id}" th:name="id">
+            <form th:action="@{/editUser}" th:object="${user}" method="POST">
+                <input type="hidden" th:field="*{id}"/>
+                <tr th:each="post, itemStat : ${user.posts}">
+                    <td>
+                        <input hidden th:name="|posts[${itemStat.index}]|" th:value="${post}"/>
+                    </td>
+                </tr>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="firstname">First Name</span>
-                    <input type="text" class="form-control" placeholder="First Name" aria-label="firstname" name="firstName" th:value="${user.firstName}" />
+                    <input type="text" class="form-control" placeholder="First Name" aria-label="firstname" th:field="*{firstName}" />
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="lastname">Last Name</span>
-                    <input type="text" class="form-control" placeholder="Last Name" aria-label="lastname" name="lastName" th:value="${user.lastName}" />
+                    <input type="text" class="form-control" placeholder="Last Name" aria-label="lastname" th:field="*{lastName}" />
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="email">E-mail&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                    <input type="text" class="form-control" placeholder="E-mail" aria-label="email" name="email" th:value="${user.email}" />
+                    <input type="text" class="form-control" placeholder="E-mail" aria-label="email" th:field="*{email}" />
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="password">Password</span>
-                    <input type="password" class="form-control" placeholder="Password" aria-label="password" name="password" th:value="${user.password}" />
+                    <input type="password" class="form-control" placeholder="Password" aria-label="password" th:field="*{password}" />
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="gender">Gender&nbsp;&nbsp;&nbsp;</span>
-                    <input type="text" class="form-control" placeholder="Gender" aria-label="gender" name="gender" th:value="${user.gender}" />
+                    <input type="text" class="form-control" placeholder="Gender" aria-label="gender" th:field="*{gender}" />
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="country">Country&nbsp;&nbsp;&nbsp;</span>
-                    <input type="text" class="form-control" placeholder="Country" aria-label="country" name="country" th:value="${user.country}" />
+                    <input type="text" class="form-control" placeholder="Country" aria-label="country" th:field="*{country}" />
                 </div>
                 <div class="input-group mb-3" th:if="(${session.user.role.authority} == 'admin')">
                     <span class="input-group-text" id="role">Role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
