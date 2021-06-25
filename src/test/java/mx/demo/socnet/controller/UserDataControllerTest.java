@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package mx.demo.socnet.service;
+package mx.demo.socnet.controller;
 
 import mx.demo.socnet.controller.UserDataController;
 import mx.demo.socnet.data.entity.Roles;
 import mx.demo.socnet.data.entity.UserData;
 import mx.demo.socnet.data.entity.UserPost;
+import mx.demo.socnet.service.UserDataService;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
@@ -64,11 +65,11 @@ public class UserDataControllerTest {
     @MockBean
     private UserDetailsService userDetailsService;
 
-
     private static List<UserData> userDataList = new ArrayList<>();
     private static Page<UserData> userDataPage;
     private static List<String> matcherStringsDirectoryAdmin = new ArrayList<>();
-    private static List<Matcher<String>> matcherRegularUserSelf = new ArrayList<>(10);
+    private static List<Matcher<String>> matcherRegularUserSelf = new ArrayList<>();
+    private static List<Matcher<String>> matcherAdminUserSelf = new ArrayList<>();
     private static int loggedInAdminUserIndex = 4;
     private static int loggedInRegularUserIndex = 3;
 
@@ -100,26 +101,25 @@ public class UserDataControllerTest {
                     matcherRegularUserSelf.add(Matchers.containsString(post.getPost()));
                 });
             }
+            if (index == loggedInAdminUserIndex) {
+                matcherAdminUserSelf.add(Matchers.containsString(userData.getFirstName()));
+                matcherAdminUserSelf.add(Matchers.containsString(userData.getLastName()));
+                matcherAdminUserSelf.add(Matchers.containsString(userData.getEmail()));
+                matcherAdminUserSelf.add(Matchers.containsString(userData.getGender()));
+                matcherAdminUserSelf.add(Matchers.containsString(userData.getCountry()));
+                userData.getPosts().stream().forEach(post -> {
+                    matcherAdminUserSelf.add(Matchers.containsString(post.getPublished().toString()));
+                    matcherAdminUserSelf.add(Matchers.containsString(post.getPost()));
+                });
+            }
         });
 
         userDataPage = new PageImpl<>(userDataList);
     }
 
-
     @WithMockUser
     @Test
-    public void directoryTestAdmin() throws Exception {
-        Mockito.when(userDataService.getUsersPage(0, 20)).thenReturn(userDataPage);
-
-        this.mockMvc.perform(get("/directory")
-                .sessionAttr("user", userDataList.get(loggedInAdminUserIndex)))
-                .andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().string(Matchers.stringContainsInOrder(matcherStringsDirectoryAdmin)));
-    }
-
-    @WithMockUser
-    @Test
-    public void directoryTestRegular() throws Exception {
+    public void directoryRegularGet() throws Exception {
         Mockito.when(userDataService.getUsersPage(0, 20)).thenReturn(userDataPage);
 
         this.mockMvc.perform(get("/directory")
@@ -132,7 +132,18 @@ public class UserDataControllerTest {
 
     @WithMockUser
     @Test
-    public void userTestRegularSelfGet() throws Exception {
+    public void directoryAdminGet() throws Exception {
+        Mockito.when(userDataService.getUsersPage(0, 20)).thenReturn(userDataPage);
+
+        this.mockMvc.perform(get("/directory")
+                .sessionAttr("user", userDataList.get(loggedInAdminUserIndex)))
+                .andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.stringContainsInOrder(matcherStringsDirectoryAdmin)));
+    }
+
+    @WithMockUser
+    @Test
+    public void userRegularSelfGet() throws Exception {
         this.mockMvc.perform(get("/user")
                 .sessionAttr("user", userDataList.get(loggedInRegularUserIndex)))
                 .andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().isOk())
@@ -141,7 +152,16 @@ public class UserDataControllerTest {
 
     @WithMockUser
     @Test
-    public void userTestRegularOtherGet() throws Exception {
+    public void userAdminSelfGet() throws Exception {
+        this.mockMvc.perform(get("/user")
+                .sessionAttr("user", userDataList.get(loggedInAdminUserIndex)))
+                .andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.allOf(matcherAdminUserSelf.stream().collect(Collectors.toList()))));
+    }
+
+    @WithMockUser
+    @Test
+    public void userRegularOtherGet() throws Exception {
         Long otherUserId = loggedInRegularUserIndex + 1L;
         Mockito.when(userDataService.getUser(otherUserId)).thenReturn(userDataList.get(otherUserId.intValue()));
 
@@ -153,7 +173,7 @@ public class UserDataControllerTest {
 
     @WithMockUser
     @Test
-    public void userTestAdminOtherGet() throws Exception {
+    public void userAdminOtherGet() throws Exception {
         Long otherUserId = loggedInAdminUserIndex + 1L;
         Mockito.when(userDataService.getUser(otherUserId)).thenReturn(userDataList.get(otherUserId.intValue()));
 
@@ -165,7 +185,7 @@ public class UserDataControllerTest {
 
     @WithMockUser
     @Test
-    public void userTestRegularSelfPost() throws Exception {
+    public void userRegularSelfPost() throws Exception {
         this.mockMvc.perform(post("/user").with(csrf()).flashAttr("user", userDataList.get(loggedInRegularUserIndex))
                 .sessionAttr("user", userDataList.get(loggedInRegularUserIndex))).andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -174,7 +194,16 @@ public class UserDataControllerTest {
 
     @WithMockUser
     @Test
-    public void userTestRegularOtherPost() throws Exception {
+    public void userAdminSelfPost() throws Exception {
+        this.mockMvc.perform(post("/user").with(csrf()).flashAttr("user", userDataList.get(loggedInAdminUserIndex))
+                .sessionAttr("user", userDataList.get(loggedInRegularUserIndex))).andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string(Matchers.allOf(matcherAdminUserSelf.stream().collect(Collectors.toList()))));
+    }
+
+    @WithMockUser
+    @Test
+    public void userRegularOtherPost() throws Exception {
         Long otherUserId = loggedInRegularUserIndex + 1L;
 
         this.mockMvc.perform(post("/user").with(csrf()).flashAttr("user", userDataList.get(otherUserId.intValue()))
@@ -185,7 +214,7 @@ public class UserDataControllerTest {
 
     @WithMockUser
     @Test
-    public void userTestAdminOtherPost() throws Exception {
+    public void userAdminOtherPost() throws Exception {
         Long otherUserId = loggedInAdminUserIndex + 1L;
 
         this.mockMvc.perform(post("/user").with(csrf()).flashAttr("user", userDataList.get(otherUserId.intValue()))
@@ -196,7 +225,7 @@ public class UserDataControllerTest {
 
     @WithMockUser(roles = Roles.REGULAR)
     @Test
-    public void newUserTestRegularGet() throws Exception {
+    public void newUserRegularGet() throws Exception {
         Long otherUserId = loggedInRegularUserIndex + 1L;
 
         this.mockMvc.perform(get("/newUser").with(csrf()).param("userId", otherUserId.toString())
@@ -206,7 +235,7 @@ public class UserDataControllerTest {
 
     @WithMockUser(roles = Roles.ADMIN)
     @Test
-    public void newUserTestAdminGet() throws Exception {
+    public void newUserAdminGet() throws Exception {
         this.mockMvc.perform(get("/newUser")
                 .sessionAttr("user", userDataList.get(loggedInAdminUserIndex))).andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -214,7 +243,7 @@ public class UserDataControllerTest {
 
     @WithMockUser(roles = Roles.REGULAR)
     @Test
-    public void editUserTestRegularSelfGet() throws Exception {
+    public void editUserRegularSelfGet() throws Exception {
         List<String> matcherRegularUserSelf = new ArrayList<>();
         matcherRegularUserSelf.add(userDataList.get(loggedInRegularUserIndex).getFirstName());
         matcherRegularUserSelf.add(userDataList.get(loggedInRegularUserIndex).getLastName());
@@ -231,9 +260,28 @@ public class UserDataControllerTest {
                                 Matchers.not(Matchers.containsString("span class=\"input-group-text\" id=\"role\">Role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>")))));
     }
 
+    @WithMockUser(roles = Roles.ADMIN)
+    @Test
+    public void editUserAdminSelfGet() throws Exception {
+        List<String> matcherAdminUserSelf = new ArrayList<>();
+        matcherAdminUserSelf.add(userDataList.get(loggedInAdminUserIndex).getFirstName());
+        matcherAdminUserSelf.add(userDataList.get(loggedInAdminUserIndex).getLastName());
+        matcherAdminUserSelf.add(userDataList.get(loggedInAdminUserIndex).getEmail());
+        matcherAdminUserSelf.add(userDataList.get(loggedInAdminUserIndex).getGender());
+        matcherAdminUserSelf.add(userDataList.get(loggedInAdminUserIndex).getCountry());
+
+        this.mockMvc.perform(get("/editUser")
+                .sessionAttr("user", userDataList.get(loggedInAdminUserIndex)))
+                .andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string(
+                        Matchers.allOf(
+                                Matchers.stringContainsInOrder(matcherAdminUserSelf),
+                                Matchers.containsString("span class=\"input-group-text\" id=\"role\">Role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"))));
+    }
+
     @WithMockUser(roles = Roles.REGULAR)
     @Test
-    public void editUserTestRegularOtherGet() throws Exception {
+    public void editUserRegularOtherGet() throws Exception {
         Long otherUserId = loggedInRegularUserIndex + 1L;
 
         this.mockMvc.perform(get("/editUser").param("user", userDataList.get(otherUserId.intValue()).toString())
@@ -243,7 +291,7 @@ public class UserDataControllerTest {
 
     @WithMockUser(roles = Roles.ADMIN)
     @Test
-    public void editUserTestAdminOtherGet() throws Exception {
+    public void editUserAdminOtherGet() throws Exception {
         Long otherUserId = loggedInAdminUserIndex + 1L;
         List<String> matcherRegularUserSelf = new ArrayList<>();
         matcherRegularUserSelf.add(userDataList.get(otherUserId.intValue()).getFirstName());
@@ -263,7 +311,7 @@ public class UserDataControllerTest {
 
     @WithMockUser(roles = Roles.REGULAR)
     @Test
-    public void editUserTestRegularSelfPost() throws Exception {
+    public void editUserRegularSelfPost() throws Exception {
         Long otherUserId = loggedInRegularUserIndex + 1L;
         UserData updatedUser = new UserData((long) loggedInRegularUserIndex, userDataList.get(otherUserId.intValue()).getFirstName(),
                                             userDataList.get(otherUserId.intValue()).getLastName(), userDataList.get(otherUserId.intValue()).getEmail(),
@@ -271,7 +319,7 @@ public class UserDataControllerTest {
                                             userDataList.get(otherUserId.intValue()).getCountry(), userDataList.get(otherUserId.intValue()).getPassword(),
                                             userDataList.get(otherUserId.intValue()).getPosts());
 
-        Mockito.when(userDataService.updateUser(userDataList.get(otherUserId.intValue()))).thenReturn(userDataList.get(otherUserId.intValue()));
+        Mockito.when(userDataService.updateUser(updatedUser)).thenReturn(updatedUser);
 
 
         List<String> matcherRegularUserSelf = new ArrayList<>();
@@ -290,9 +338,82 @@ public class UserDataControllerTest {
                                 Matchers.not(Matchers.containsString("span class=\"input-group-text\" id=\"role\">Role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>")))));
     }
 
+    @WithMockUser(roles = Roles.ADMIN)
+    @Test
+    public void editUserAdminSelfPost() throws Exception {
+        Long otherUserId = loggedInAdminUserIndex + 1L;
+        UserData updatedUser = new UserData((long) loggedInAdminUserIndex, userDataList.get(otherUserId.intValue()).getFirstName(),
+                userDataList.get(otherUserId.intValue()).getLastName(), userDataList.get(otherUserId.intValue()).getEmail(),
+                userDataList.get(loggedInAdminUserIndex).getRole(), userDataList.get(otherUserId.intValue()).getGender(),
+                userDataList.get(otherUserId.intValue()).getCountry(), userDataList.get(otherUserId.intValue()).getPassword(),
+                userDataList.get(otherUserId.intValue()).getPosts());
+
+        Mockito.when(userDataService.updateUser(updatedUser)).thenReturn(updatedUser);
+
+
+        List<String> matcherAdminUserSelf = new ArrayList<>();
+        matcherAdminUserSelf.add(updatedUser.getFirstName());
+        matcherAdminUserSelf.add(updatedUser.getLastName());
+        matcherAdminUserSelf.add(updatedUser.getEmail());
+        matcherAdminUserSelf.add(updatedUser.getGender());
+        matcherAdminUserSelf.add(updatedUser.getCountry());
+
+        this.mockMvc.perform(post("/editUser").with(csrf()).flashAttr("user", updatedUser)
+                .sessionAttr("user", userDataList.get(loggedInAdminUserIndex))).andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string(
+                        Matchers.allOf(
+                                Matchers.stringContainsInOrder(matcherAdminUserSelf),
+                                Matchers.containsString("span class=\"input-group-text\" id=\"role\">Role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>"))));
+    }
+
     @WithMockUser(roles = Roles.REGULAR)
     @Test
-    public void editUserTestRegularOtherPost() throws Exception {
+    public void editUserRegularSelfRolePost() throws Exception {
+        Long otherUserId = loggedInRegularUserIndex + 1L;
+        UserData updatedUser = new UserData((long) loggedInRegularUserIndex, userDataList.get(otherUserId.intValue()).getFirstName(),
+                userDataList.get(otherUserId.intValue()).getLastName(), userDataList.get(otherUserId.intValue()).getEmail(),
+                new Roles(Roles.ADMIN), userDataList.get(otherUserId.intValue()).getGender(),
+                userDataList.get(otherUserId.intValue()).getCountry(), userDataList.get(otherUserId.intValue()).getPassword(),
+                userDataList.get(otherUserId.intValue()).getPosts());
+
+        this.mockMvc.perform(post("/editUser").with(csrf()).flashAttr("user", updatedUser)
+                .sessionAttr("user", userDataList.get(loggedInRegularUserIndex))).andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @WithMockUser(roles = Roles.ADMIN)
+    @Test
+    public void editUserAdminSelfRolePost() throws Exception {
+        Long otherUserId = loggedInAdminUserIndex + 1L;
+        UserData updatedUser = new UserData((long) loggedInAdminUserIndex, userDataList.get(otherUserId.intValue()).getFirstName(),
+                userDataList.get(otherUserId.intValue()).getLastName(), userDataList.get(otherUserId.intValue()).getEmail(),
+                new Roles(Roles.REGULAR), userDataList.get(otherUserId.intValue()).getGender(),
+                userDataList.get(otherUserId.intValue()).getCountry(), userDataList.get(otherUserId.intValue()).getPassword(),
+                userDataList.get(otherUserId.intValue()).getPosts());
+
+        Mockito.when(userDataService.updateUser(updatedUser)).thenReturn(updatedUser);
+
+
+        List<String> matcherAdminUserSelf = new ArrayList<>();
+        matcherAdminUserSelf.add(updatedUser.getFirstName());
+        matcherAdminUserSelf.add(updatedUser.getLastName());
+        matcherAdminUserSelf.add(updatedUser.getEmail());
+        matcherAdminUserSelf.add(updatedUser.getGender());
+        matcherAdminUserSelf.add(updatedUser.getCountry());
+
+        this.mockMvc.perform(post("/editUser").with(csrf()).flashAttr("user", updatedUser)
+                .sessionAttr("user", userDataList.get(loggedInAdminUserIndex))).andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string(
+                        Matchers.allOf(
+                                Matchers.stringContainsInOrder(matcherAdminUserSelf),
+                                Matchers.not(Matchers.containsString("span class=\"input-group-text\" id=\"role\">Role&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>")))));
+    }
+
+    @WithMockUser(roles = Roles.REGULAR)
+    @Test
+    public void editUserRegularOtherPost() throws Exception {
         Long otherUserId = loggedInRegularUserIndex + 1L;
 
         this.mockMvc.perform(post("/editUser").with(csrf()).flashAttr("user", userDataList.get(otherUserId.intValue()))
@@ -302,7 +423,7 @@ public class UserDataControllerTest {
 
     @WithMockUser(roles = Roles.ADMIN)
     @Test
-    public void editUserTestAdminOtherPost() throws Exception {
+    public void editUserAdminOtherPost() throws Exception {
         Long otherUserId = loggedInAdminUserIndex + 1L;
 
         Mockito.when(userDataService.updateUser(userDataList.get(otherUserId.intValue()))).thenReturn(userDataList.get(otherUserId.intValue()));
@@ -327,7 +448,7 @@ public class UserDataControllerTest {
 
     @WithMockUser(roles = Roles.REGULAR)
     @Test
-    public void deleteUserTestRegularGet() throws Exception {
+    public void deleteUserRegularGet() throws Exception {
         Long otherUserId = loggedInRegularUserIndex + 1L;
 
         this.mockMvc.perform(get("/deleteUser").with(csrf()).param("userId", otherUserId.toString())
@@ -337,7 +458,7 @@ public class UserDataControllerTest {
 
     @WithMockUser(roles = Roles.ADMIN)
     @Test
-    public void deleteUserTestAdminGet() throws Exception {
+    public void deleteUserAdminGet() throws Exception {
         Long otherUserId = loggedInAdminUserIndex + 1L;
         String email = userDataList.get(otherUserId.intValue()).getEmail();
         Mockito.when(userDataService.getUser(otherUserId)).thenReturn(userDataList.get(otherUserId.intValue()));

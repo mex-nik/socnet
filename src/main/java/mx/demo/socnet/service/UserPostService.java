@@ -44,4 +44,8 @@ public class UserPostService {
         userPostRepository.save(post);
     }
 
+    public void removePost(UserPost post) {
+        userPostRepository.delete(post);
+    }
+
 }

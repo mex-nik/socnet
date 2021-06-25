@@ -23,10 +23,11 @@ import mx.demo.socnet.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -115,7 +116,7 @@ public class UserDataController {
         UserData userData = user.orElse(loggedInUser);
 
         if (!loggedInUser.getRole().getAuthority().equals(Roles.ADMIN) && loggedInUser.getId().longValue() != userData.getId().longValue()) {
-            throw new AccessDeniedException("Not permissions to edit user");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No permissions to edit user");
         }
 
         model.addAttribute("user", userData);
@@ -130,7 +131,10 @@ public class UserDataController {
             @ModelAttribute("user") UserData user) {
         UserData loggedInUser = (UserData) httpSession.getAttribute("user");
         if (!loggedInUser.getRole().getAuthority().equals(Roles.ADMIN) && loggedInUser.getId().longValue() != user.getId().longValue()) {
-            throw new AccessDeniedException("Not permissions to edit user");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No permissions to edit user");
+        }
+        if (!loggedInUser.getRole().getAuthority().equals(Roles.ADMIN) && user.getRole().getAuthority().equals(Roles.ADMIN)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No permissions to edit your role");
         }
         UserData updatedUser = userDataService.updateUser(user);
         if (updatedUser == null) {
