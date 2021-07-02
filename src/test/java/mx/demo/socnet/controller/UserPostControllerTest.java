@@ -19,6 +19,7 @@ package mx.demo.socnet.controller;
 import mx.demo.socnet.data.entity.Roles;
 import mx.demo.socnet.data.entity.UserData;
 import mx.demo.socnet.data.entity.UserPost;
+import mx.demo.socnet.service.UserDataService;
 import mx.demo.socnet.service.UserPostService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
@@ -58,138 +59,155 @@ public class UserPostControllerTest {
 	private UserPostService userPostService;
 
     @MockBean
+    private UserDataService userDataService;
+
+    @MockBean
     private UserDetailsService userDetailsService;
 
-	private static UserData admin;
+	private static UserData adminUserData;
 
-	private static UserData regular;
+	private static UserData regularUserData;
 
     @BeforeAll
     public static void setup() {
-       admin = new UserData(0L, "Admin", "Adminson", "admin@admins.net",
+       adminUserData = new UserData(0L, "Admin", "Adminson", "admin@admins.net",
                new Roles(Roles.ADMIN), "admin", "Adminland", "admin",
-               new ArrayList<>(Arrays.asList(new UserPost(0L, admin, "Hello, I'm Admin", new Date(Calendar.getInstance().getTimeInMillis())),
-                       new UserPost(1L, admin, "Hello, I'm still Admin", new Date(Calendar.getInstance().getTimeInMillis())))));
-        regular = new UserData(1L, "Regular", "Guy", "guy@regulars.net",
-                new Roles(Roles.REGULAR), "regular", "Regularland", "regular",
-                new ArrayList<>(Arrays.asList(new UserPost(0L, regular, "Hello, I'm not Admin", new Date(Calendar.getInstance().getTimeInMillis())),
-                        new UserPost(1L, regular, "Hello, I'm just Regular Guy", new Date(Calendar.getInstance().getTimeInMillis())))));
+               new ArrayList<>(Arrays.asList(new UserPost(0L, adminUserData, "Hello, I'm Admin", new Date(Calendar.getInstance().getTimeInMillis())),
+                       new UserPost(1L, adminUserData, "Hello, I'm still Admin", new Date(Calendar.getInstance().getTimeInMillis())))));
+        regularUserData = new UserData(1L, "Regular", "Guy", "guy@regulars.net",
+                new Roles(Roles.REGULAR), "regular", "Reguland", "regular",
+                new ArrayList<>(Arrays.asList(new UserPost(0L, regularUserData, "Hello, I'm not Admin", new Date(Calendar.getInstance().getTimeInMillis())),
+                        new UserPost(1L, regularUserData, "Hello, I'm just Regular Guy", new Date(Calendar.getInstance().getTimeInMillis())))));
     }
-    @WithMockUser(roles = Roles.REGULAR)
+    
+    @WithMockUser(username = "guy@regulars.net", roles = Roles.REGULAR)
     @Test
     public void addPostRegularSelfPost() throws Exception {
-        UserPost addMe = new UserPost(6L, regular, "TestADD", new Date(Calendar.getInstance().getTimeInMillis()));
+        Mockito.when(userDataService.getUser(regularUserData.getEmail())).thenReturn(regularUserData);
+
+        UserPost addMe = new UserPost(6L, regularUserData, "TestADD", new Date(Calendar.getInstance().getTimeInMillis()));
 
         Mockito.doAnswer(invocationOnMock -> {
-            regular.getPosts().add(addMe);
+            regularUserData.getPosts().add(addMe);
             return invocationOnMock;
         }).when(userPostService).addPost(addMe);
 
         this.mockMvc.perform(post("/addPost").with(csrf()).flashAttr("newpost", addMe)
-                .sessionAttr("user", regular))
+                .sessionAttr("user", regularUserData))
                 .andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(addMe.getPost())));
-        regular.getPosts().removeIf(post -> post.getId().longValue() == addMe.getId().longValue());
+        regularUserData.getPosts().removeIf(post -> post.getId().equals(addMe.getId()));
     }
 
-    @WithMockUser(roles = Roles.ADMIN)
+    @WithMockUser(username = "admin@admins.net", roles = Roles.ADMIN)
     @Test
     public void addPostAdminSelfPost() throws Exception {
-        UserPost addMe = new UserPost(6L, admin, "TestADD", new Date(Calendar.getInstance().getTimeInMillis()));
+        Mockito.when(userDataService.getUser(adminUserData.getEmail())).thenReturn(adminUserData);
+
+        UserPost addMe = new UserPost(6L, adminUserData, "TestADD", new Date(Calendar.getInstance().getTimeInMillis()));
 
         Mockito.doAnswer(invocationOnMock -> {
-            admin.getPosts().add(addMe);
+            adminUserData.getPosts().add(addMe);
             return invocationOnMock;
         }).when(userPostService).removePost(addMe);
 
         this.mockMvc.perform(post("/addPost").with(csrf()).flashAttr("newpost", addMe)
-                .sessionAttr("user", admin))
+                .sessionAttr("user", adminUserData))
                 .andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(addMe.getPost())));
-        admin.getPosts().removeIf(post -> post.getId().longValue() == addMe.getId().longValue());
+        adminUserData.getPosts().removeIf(post -> post.getId().equals(addMe.getId()));
     }
 
-    @WithMockUser(roles = Roles.REGULAR)
+    @WithMockUser(username = "guy@regulars.net", roles = Roles.REGULAR)
     @Test
     public void addPostRegularOtherPost() throws Exception {
+        Mockito.when(userDataService.getUser(regularUserData.getEmail())).thenReturn(regularUserData);
         UserData otherUser = new UserData();
-        otherUser.setId(regular.getId() + 3L);
+        otherUser.setId(regularUserData.getId() + 3L);
         UserPost othersPost = new UserPost(0L, otherUser, "Hello, I'm not Admin", new Date(Calendar.getInstance().getTimeInMillis()));
 
         this.mockMvc.perform(post("/addPost").with(csrf()).flashAttr("newpost", othersPost)
-                .sessionAttr("user", regular))
+                .sessionAttr("user", regularUserData))
                 .andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
-    @WithMockUser(roles = Roles.ADMIN)
+    @WithMockUser(username = "admin@admins.net", roles = Roles.ADMIN)
     @Test
     public void addPostAdminOtherPost() throws Exception {
+        Mockito.when(userDataService.getUser(adminUserData.getEmail())).thenReturn(adminUserData);
+
         UserData otherUser = new UserData();
-        otherUser.setId(admin.getId() + 3L);
+        otherUser.setId(adminUserData.getId() + 3L);
         UserPost othersPost = new UserPost(0L, otherUser, "Hello, I'm not Admin", new Date(Calendar.getInstance().getTimeInMillis()));
 
         this.mockMvc.perform(post("/addPost").with(csrf()).flashAttr("newpost", othersPost)
-                .sessionAttr("user", admin))
+                .sessionAttr("user", adminUserData))
                 .andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
-    @WithMockUser(roles = Roles.REGULAR)
+    @WithMockUser(username = "guy@regulars.net", roles = Roles.REGULAR)
     @Test
     public void deletePostRegularSelfPost() throws Exception {
-        UserPost removeMe = new UserPost(6L, regular, "TestRemove", new Date(Calendar.getInstance().getTimeInMillis()));
-        regular.getPosts().add(removeMe);
+        Mockito.when(userDataService.getUser(regularUserData.getEmail())).thenReturn(regularUserData);
+        UserPost removeMe = new UserPost(6L, regularUserData, "TestRemove", new Date(Calendar.getInstance().getTimeInMillis()));
+        regularUserData.getPosts().add(removeMe);
         Mockito.doAnswer(invocationOnMock -> {
-            regular.getPosts().remove(removeMe);
+            regularUserData.getPosts().remove(removeMe);
             return invocationOnMock;
         }).when(userPostService).removePost(removeMe);
 
         this.mockMvc.perform(post("/deletePost").with(csrf()).flashAttr("post", removeMe)
-                .sessionAttr("user", regular))
+                .sessionAttr("user", regularUserData))
                 .andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString(removeMe.getPost()))));
     }
 
-    @WithMockUser(roles = Roles.ADMIN)
+    @WithMockUser(username = "admin@admins.net", roles = Roles.ADMIN)
     @Test
     public void deletePostAdminSelfPost() throws Exception {
-        UserPost removeMe = new UserPost(6L, admin, "TestRemove", new Date(Calendar.getInstance().getTimeInMillis()));
-        admin.getPosts().add(removeMe);
+        Mockito.when(userDataService.getUser(adminUserData.getEmail())).thenReturn(adminUserData);
+
+        UserPost removeMe = new UserPost(6L, adminUserData, "TestRemove", new Date(Calendar.getInstance().getTimeInMillis()));
+        adminUserData.getPosts().add(removeMe);
         Mockito.doAnswer(invocationOnMock -> {
-            admin.getPosts().remove(removeMe);
+            adminUserData.getPosts().remove(removeMe);
             return invocationOnMock;
         }).when(userPostService).removePost(removeMe);
 
         this.mockMvc.perform(post("/deletePost").with(csrf()).flashAttr("post", removeMe)
-                .sessionAttr("user", admin))
+                .sessionAttr("user", adminUserData))
                 .andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString(removeMe.getPost()))));
     }
 
-    @WithMockUser(roles = Roles.REGULAR)
+    @WithMockUser(username = "guy@regulars.net", roles = Roles.REGULAR)
     @Test
     public void deletePostRegularOtherPost() throws Exception {
+        Mockito.when(userDataService.getUser(regularUserData.getEmail())).thenReturn(regularUserData);
 
         UserData otherUser = new UserData();
-        otherUser.setId(regular.getId() + 3L);
+        otherUser.setId(regularUserData.getId() + 3L);
         UserPost othersPost = new UserPost(0L, otherUser, "Hello, I'm not Admin", new Date(Calendar.getInstance().getTimeInMillis()));
 
         this.mockMvc.perform(post("/deletePost").with(csrf()).flashAttr("post", othersPost)
-                .sessionAttr("user", regular))
+                .sessionAttr("user", regularUserData))
                 .andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
-    @WithMockUser(roles = Roles.ADMIN)
+    @WithMockUser(username = "admin@admins.net", roles = Roles.ADMIN)
     @Test
     public void deletePostAdminOtherPost() throws Exception {
-        UserPost removeMe = new UserPost(6L, regular, "TestRemove", new Date(Calendar.getInstance().getTimeInMillis()));
-        regular.getPosts().add(removeMe);
+        Mockito.when(userDataService.getUser(adminUserData.getEmail())).thenReturn(adminUserData);
+
+        UserPost removeMe = new UserPost(6L, regularUserData, "TestRemove", new Date(Calendar.getInstance().getTimeInMillis()));
+        regularUserData.getPosts().add(removeMe);
         Mockito.doAnswer(invocationOnMock -> {
-            regular.getPosts().remove(removeMe);
+            regularUserData.getPosts().remove(removeMe);
             return invocationOnMock;
         }).when(userPostService).removePost(removeMe);
 
         this.mockMvc.perform(post("/deletePost").with(csrf()).flashAttr("post", removeMe)
-                .sessionAttr("user", admin))
+                .sessionAttr("user", adminUserData))
                 .andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string(Matchers.not(Matchers.containsString(removeMe.getPost()))));
     }

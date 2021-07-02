@@ -21,6 +21,20 @@ spring:
   jpa:
     show-sql: true
     hibernate.ddl-auto: none
+  kafka:
+    bootstrap-servers: "localhost:9092"
+    consumer:
+      value-deserializer: "org.springframework.kafka.support.serializer.JsonDeserializer"
+      group-id: "socnetChat"
+      properties:
+        "[spring.json.value.default.type]": "mx.demo.socnet.data.entity.ChatMessage"
+        "[spring.json.trusted.packages]": "mx.demo.socnet"
+    producer:
+      value-serializer: "org.springframework.kafka.support.serializer.JsonSerializer"
 
 defaults:
   page-size: 20
+
+kafka:
+  topic:
+    chat: socnetchat

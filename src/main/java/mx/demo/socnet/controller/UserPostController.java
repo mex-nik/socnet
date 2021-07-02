@@ -20,17 +20,17 @@ import lombok.extern.slf4j.Slf4j;
 import mx.demo.socnet.data.entity.Roles;
 import mx.demo.socnet.data.entity.UserData;
 import mx.demo.socnet.data.entity.UserPost;
+import mx.demo.socnet.service.UserDataService;
 import mx.demo.socnet.service.UserPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
-
-import javax.servlet.http.HttpSession;
 
 /**
  * @author Mladen Nikolic <mladen.nikolic.mex@gmail.com>
@@ -46,18 +46,20 @@ public class UserPostController {
 
     private final UserPostService userPostService;
 
+    private final UserDataService userDataService;
+
     @Autowired
-    public UserPostController(UserPostService userPostService) {
+    public UserPostController(UserPostService userPostService, UserDataService userDataService) {
         this.userPostService = userPostService;
+        this.userDataService = userDataService;
     }
 
     @PostMapping("/addPost")
     public String addPost(
-            HttpSession httpSession,
             Model model,
             @ModelAttribute("newpost") UserPost post) {
-        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
-        if (loggedInUser.getId().longValue() != post.getUser().getId().longValue()) {
+        UserData loggedInUser = userDataService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (!loggedInUser.equals(post.getUser())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No permissions to add post for another user");
         }
        if (!post.getPost().strip().isEmpty()){
@@ -65,20 +67,20 @@ public class UserPostController {
             loggedInUser.getPosts().add(0, post);
             userPostService.addPost(post);
         }
+
         return "user";
     }
 
 
     @PostMapping("/deletePost")
     public String deletePost(
-            HttpSession httpSession,
             Model model,
             @ModelAttribute("post") UserPost post) {
-        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
-        if (!loggedInUser.getRole().getAuthority().equals(Roles.ADMIN) && loggedInUser.getId().longValue() != post.getUser().getId().longValue()) {
+        UserData loggedInUser = userDataService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (!loggedInUser.getRole().getAuthority().equals(Roles.ADMIN) && !loggedInUser.equals(post.getUser())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No permissions to remove post");
         }
-        post.getUser().getPosts().removeIf(post1 -> (post.getId().longValue() == post1.getId().longValue()));
+        post.getUser().getPosts().removeIf(post1 -> (post.getId().equals(post1.getId())));
         model.addAttribute("user", post.getUser());
         userPostService.removePost(post);
         return "user";

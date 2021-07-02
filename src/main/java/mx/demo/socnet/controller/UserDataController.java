@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -81,7 +82,7 @@ public class UserDataController {
             HttpSession httpSession,
             Model model,
             @RequestParam("userId") Optional<Long> userId) {
-        UserData user = (UserData) httpSession.getAttribute("user");
+        UserData user = userDataService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
         if (userId.isPresent()) {
             user = userDataService.getUser(userId.get());
         }
@@ -112,10 +113,10 @@ public class UserDataController {
             HttpSession httpSession,
             Model model,
             @RequestParam("user") Optional<UserData> user) {
-        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
+        UserData loggedInUser = userDataService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
         UserData userData = user.orElse(loggedInUser);
 
-        if (!loggedInUser.getRole().getAuthority().equals(Roles.ADMIN) && loggedInUser.getId().longValue() != userData.getId().longValue()) {
+        if (!loggedInUser.getRole().getAuthority().equals(Roles.ADMIN) && !loggedInUser.equals(userData)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No permissions to edit user");
         }
 
@@ -129,8 +130,8 @@ public class UserDataController {
             HttpSession httpSession,
             Model model,
             @ModelAttribute("user") UserData user) {
-        UserData loggedInUser = (UserData) httpSession.getAttribute("user");
-        if (!loggedInUser.getRole().getAuthority().equals(Roles.ADMIN) && loggedInUser.getId().longValue() != user.getId().longValue()) {
+        UserData loggedInUser = userDataService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (!loggedInUser.getRole().getAuthority().equals(Roles.ADMIN) && !loggedInUser.equals(user)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No permissions to edit user");
         }
         if (!loggedInUser.getRole().getAuthority().equals(Roles.ADMIN) && user.getRole().getAuthority().equals(Roles.ADMIN)) {

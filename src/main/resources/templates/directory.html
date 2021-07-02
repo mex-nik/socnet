@@ -80,7 +80,7 @@
                     <button  class="btn btn-light" type="submit" th:name="user" th:value="${userdata}">posts</button>
                 </form>
             </td>
-            <td><a th:href="@{'/userDatas/' + ${userdata.id}}">Chat</a></td>
+            <td><a class="btn btn-light" th:href="@{/chat(userId=${userdata.id})}">chat</a></td>
         </tr>
     </table>
     <div class="row">

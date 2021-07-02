@@ -23,6 +23,7 @@ import org.apache.el.stream.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,8 +58,14 @@ public class UserDataService {
         return userDataRepository.findById(id).orElse(null);
     }
 
-    public List<UserData> getUser(String email) {
-        return userDataRepository.findByEmail(email);
+    public UserData getUser(String email) {
+        List<UserData> userDatas = userDataRepository.findByEmail(email);
+        if (userDatas.isEmpty()) {
+            new UsernameNotFoundException(String.format("User with email %s does not exist", email));
+        } else if (userDatas.size() > 1){
+            new UsernameNotFoundException(String.format("Multiple users with email %s", email));
+        }
+        return userDatas.get(0);
     }
 
     public UserData updateUser(UserData userData) {

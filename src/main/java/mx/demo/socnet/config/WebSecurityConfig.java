@@ -50,8 +50,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/deleteUser").hasAnyRole(Roles.ADMIN)
-                .antMatchers("/newUser").hasAnyRole(Roles.ADMIN)
+                .antMatchers("/sendChat").permitAll()
+                .antMatchers("/deleteUser", "/newUser").hasAnyRole(Roles.ADMIN)
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

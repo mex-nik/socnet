@@ -18,7 +18,6 @@ package mx.demo.socnet.service;
 
 import lombok.extern.slf4j.Slf4j;
 import mx.demo.socnet.data.entity.UserData;
-import mx.demo.socnet.data.repository.UserDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -41,30 +40,25 @@ import static org.springframework.security.core.userdetails.User.withUsername;
 @Service
 public class SocNetUserDetailsService implements UserDetailsService {
 
-    private final UserDataRepository userDataRepository;
+    private final UserDataService userDataService;
 
     private HttpSession httpSession;
 
     @Autowired
-    public SocNetUserDetailsService(UserDataRepository userDataRepository, HttpSession httpSession) {
-        this.userDataRepository = userDataRepository;
+    public SocNetUserDetailsService(UserDataService userDataService, HttpSession httpSession) {
+        this.userDataService = userDataService;
         this.httpSession = httpSession;
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        List<UserData> userDatas = userDataRepository.findByEmail(email);
-        if (userDatas.isEmpty()) {
-            new UsernameNotFoundException(String.format("User with email %s does not exist", email));
-        } else if (userDatas.size() > 1){
-            new UsernameNotFoundException(String.format("Multiple users with email %s", email));
-        }
-        httpSession.setAttribute("user", userDatas.get(0));
-        return withUsername(userDatas.get(0).getEmail())
-                .password(userDatas.get(0).getPassword())
+        UserData userData = userDataService.getUser(email);
+        httpSession.setAttribute("user", userData);
+        return withUsername(userData.getEmail())
+                .password(userData.getPassword())
                 .passwordEncoder(pass -> "{noop}" + pass)
-                .authorities(userDatas.get(0).getRole())
-                .roles(userDatas.get(0).getRole().getAuthority())
+                .authorities(userData.getRole())
+                .roles(userData.getRole().getAuthority())
                 .accountExpired(false)
                 .accountLocked(false)
                 .credentialsExpired(false)

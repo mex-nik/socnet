@@ -30,6 +30,7 @@ import mx.demo.socnet.util.RolesToBooleanConverter;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Mladen Nikolic <mladen.nikolic.mex@gmail.com>
@@ -63,6 +64,19 @@ public class UserData {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     @OrderBy("published DESC")
     private List<UserPost> posts;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserData)) return false;
+        UserData userData = (UserData) o;
+        return getId().equals(userData.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
 
     @Override
     public String toString() {
