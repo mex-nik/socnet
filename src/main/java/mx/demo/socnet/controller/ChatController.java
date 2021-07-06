@@ -28,7 +28,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Mladen Nikolic <mladen.nikolic.mex@gmail.com>
@@ -63,7 +65,7 @@ public class ChatController {
         List<ChatMessage> chat = chatService.getThread(user.getId(), userId);
         message.setFromUserId(user.getId());
         message.setToUserId(userId);
-        model.addAttribute("chatThread", chat);
+        model.addAttribute("chatThread", chat.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
         model.addAttribute("receiver", receiver);
 
         return "chat";
@@ -77,7 +79,9 @@ public class ChatController {
             @ModelAttribute("receiver") UserData receiver,
             RedirectAttributes redirectAttributes) {
         receiver = userDataService.getUser(message.getToUserId());
-        chatService.send(message);
+        if (!message.getContent().isEmpty()) {
+            chatService.send(message);
+        }
         redirectAttributes.addAttribute("userId", message.getToUserId());
         model.addAttribute("receiver", receiver);
         return "redirect:chat";

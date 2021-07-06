@@ -54,13 +54,13 @@
     </div>
 </nav>
 <div class="container" style="min-height: 850px;">
-    <table class="table table-light table-striped" style="position:relative;top: 20px;" >
+    <table class="table shadow table-light table-striped" style="position:relative;top: 20px;" >
         <thead>
             <tr>
                 <td width="25%">Name</td>
                 <td width="25%">Surname</td>
                 <td width="25%">Email</td>
-                <td align="center" width="25%" colspan="3">Actions</td>
+                <td align="center" width="25%" colspan="4">Actions</td>
             </tr>
         </thead>
         <tr th:each="userdata: ${userdatas}" th:if="${userdata.id} != ${session.user.id}">
@@ -69,18 +69,18 @@
             <td th:text="${userdata.email}" th:title="${userdata.password}">Email</td>
             <td th:if="(${session.user.role.authority} == 'admin')">
                 <form method="GET" th:action="@{/editUser}">
-                    <button  class="btn btn-light" type="submit" th:name="user" th:value="${userdata}">edit</button>
+                    <button  class="btn shadow btn-light" type="submit" th:name="user" th:value="${userdata}">edit</button>
                 </form>
             </td>
             <td th:if="(${session.user.role.authority} == 'admin')">
-                <a class="btn btn-light" th:href="@{/deleteUser(userId=${userdata.id}, size=${param.size}, page=${param.page})}">delete</a>
+                <a class="btn shadow btn-light" th:href="@{/deleteUser(userId=${userdata.id}, size=${param.size}, page=${param.page})}">delete</a>
             </td>
             <td>
                 <form method="POST" th:action="@{/user}">
-                    <button  class="btn btn-light" type="submit" th:name="user" th:value="${userdata}">posts</button>
+                    <button  class="btn shadow btn-light" type="submit" th:name="user" th:value="${userdata}">posts</button>
                 </form>
             </td>
-            <td><a class="btn btn-light" th:href="@{/chat(userId=${userdata.id})}">chat</a></td>
+            <td><a class="btn shadow btn-light" th:href="@{/chat(userId=${userdata.id})}">chat</a></td>
         </tr>
     </table>
     <div class="row">

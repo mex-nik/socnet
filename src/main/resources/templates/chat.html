@@ -57,25 +57,29 @@
   </div>
 </nav>
 <div class="container" style="min-height: 850px;">
-  <table class="table table-light table-striped" style="position:relative;top: 20px;" >
-    <tr th:each="message: ${chatThread}">
-      <td th:if="${message.fromUserId} != ${session.user.id}" th:text="${receiver.firstName}"/>
-      <td th:if="${message.fromUserId} == ${session.user.id}" th:text="${session.user.firstName}"/>
-      <td th:text="${message.content}">start chat</td>
-      <td th:text="${message.timeStamp}">sent</td>
-    </tr>
-  </table>
-  <div class="card  mb-3" style="position:relative;top: 20px;" >
-    <div class="card-header">Send Message</div>
+  <div data-bs-spy="scroll" data-bs-offset="0" tabindex="0" style="display:flex; flex-direction:column-reverse;height:500px;overflow-y:scroll;position:relative;top: 20px;bottom 5px;">
+    <div th:each="message: ${chatThread}" style="margin-bottom: 15px;">
+      <div class="card shadow" >
+        <p class="card-header fw-bold" th:if="${message.fromUserId} != ${session.user.id}" th:text="${receiver.firstName}"/>
+        <p class="card-header fw-bold" th:if="${message.fromUserId} == ${session.user.id}" th:text="${session.user.firstName}"/>
+        <div class="card-body">
+          <p class="text-end card-text fs-4" th:if="${message.fromUserId} == ${session.user.id}" th:text="${message.content}"/>
+          <p class="card-text fs-4" th:if="${message.fromUserId} != ${session.user.id}" th:text="${message.content}"/>
+        </div>
+        <div class="card-footer text-end text-muted" style="font-size: smaller;" th:text="${#dates.format(message.timeStamp, 'HH:mm, dd/MM/yyyy')}" />
+      </div>
+    </div>
+  </div>
+  <div class="card shadow mb-3" style="position:relative;top: 20px;" >
+    <div class="card-header">Send Message to [[${receiver.firstName}]]</div>
     <div class="card-body">
       <form th:action="@{/sendMessage}" th:object="${message}" method="POST">
         <input type="hidden" th:field="*{fromUserId}">
         <input type="hidden" th:field="*{toUserId}">
         <div class="input-group">
-          <span class="input-group-text">Enter message</span>
-          <textarea class="form-control" aria-label="messageText" th:field="*{content}"></textarea>
+          <textarea class="form-control" aria-label="messageText" placeholder="Message" th:field="*{content}"></textarea>
         </div>
-        <button class="btn btn-light" type="submit">Submit</button>
+        <button class="btn shadow btn-light" type="submit">Send</button>
       </form>
     </div>
   </div>
