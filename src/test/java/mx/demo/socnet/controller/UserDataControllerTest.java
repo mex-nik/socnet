@@ -111,7 +111,7 @@ public class UserDataControllerTest {
         matcherStringsDirectoryAdmin.add(regularUserData.getLastName());
         matcherStringsDirectoryAdmin.add(regularUserData.getEmail());
         matcherStringsDirectoryAdmin.add("<form method=\"GET\" action=\"/editUser\">");
-        matcherStringsDirectoryAdmin.add("<a class=\"btn btn-light\" href=\"/deleteUser?userId=");
+        matcherStringsDirectoryAdmin.add("<a class=\"btn shadow btn-light\" href=\"/deleteUser?userId=");
         
         IntStream.rangeClosed(3, 10).asLongStream().forEach(index -> {
             Roles role = (index % 2 == 0 ? new Roles(Roles.ADMIN) : new Roles(Roles.REGULAR));
@@ -125,7 +125,7 @@ public class UserDataControllerTest {
             matcherStringsDirectoryAdmin.add(userData.getLastName());
             matcherStringsDirectoryAdmin.add(userData.getEmail());
             matcherStringsDirectoryAdmin.add("<form method=\"GET\" action=\"/editUser\">");
-            matcherStringsDirectoryAdmin.add("<a class=\"btn btn-light\" href=\"/deleteUser?userId=");
+            matcherStringsDirectoryAdmin.add("<a class=\"btn shadow btn-light\" href=\"/deleteUser?userId=");
 
         });
 
