@@ -18,19 +18,20 @@ package mx.demo.socnet.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import mx.demo.socnet.data.entity.ChatMessage;
+import mx.demo.socnet.data.entity.ChatThread;
 import mx.demo.socnet.data.entity.UserData;
 import mx.demo.socnet.service.ChatService;
 import mx.demo.socnet.service.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Mladen Nikolic <mladen.nikolic.mex@gmail.com>
@@ -62,10 +63,8 @@ public class ChatController {
             @ModelAttribute("receiver") UserData receiver) {
         UserData user = (UserData) httpSession.getAttribute("user");
         receiver = userDataService.getUser(userId);
-        List<ChatMessage> chat = chatService.getThread(user.getId(), userId);
         message.setFromUserId(user.getId());
         message.setToUserId(userId);
-        model.addAttribute("chatThread", chat.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()));
         model.addAttribute("receiver", receiver);
 
         return "chat";
@@ -86,4 +85,18 @@ public class ChatController {
         model.addAttribute("receiver", receiver);
         return "redirect:chat";
     }
+
+    @MessageMapping("/getMessages")
+    @SendTo("/topic/messages")
+    public List<ChatMessage> sendMessage(ChatThread.Key key) {
+        return chatService.getThread(key.getFromUserId(), key.getToUserId(), true);
+    }
+
+    @MessageMapping("/sendMessage")
+    public void sendMessage(ChatMessage message) {
+        if (!message.getContent().isEmpty()) {
+            chatService.send(message);
+        }
+    }
+
 }

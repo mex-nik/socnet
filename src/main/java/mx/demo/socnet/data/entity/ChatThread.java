@@ -16,6 +16,7 @@
 
 package mx.demo.socnet.data.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -52,8 +53,13 @@ public class ChatThread {
         return chat.stream().sorted().collect(Collectors.toList());
     }
 
+    public List<ChatMessage> getChat(Date after) {
+        return chat.stream().sorted().filter(chatMessage -> chatMessage.getTimeStamp().after(after)).collect(Collectors.toList());
+    }
+
     @Data
     @Slf4j
+    @JsonSerialize
     public static class Key {
         @NonNull
         private Long fromUserId;
@@ -65,14 +71,12 @@ public class ChatThread {
             if (this == o) return true;
             if (!(o instanceof Key)) return false;
             Key key = (Key) o;
-            log.info("equals for f={}, t={}, and f={}, t={}", fromUserId, toUserId, key.fromUserId, key.toUserId);
             return Arrays.asList(fromUserId, toUserId, key.fromUserId, key.toUserId).stream().distinct().count() == 2;
         }
 
         @Override
         public int hashCode() {
             List<Long> sorted = Arrays.asList(fromUserId, toUserId).stream().sorted().collect(Collectors.toList());
-            log.info("hash for f={}, t={} is {}", fromUserId, toUserId, Objects.hash(sorted.get(0), sorted.get(1)));
             return Objects.hash(sorted.get(0), sorted.get(1));
         }
     }

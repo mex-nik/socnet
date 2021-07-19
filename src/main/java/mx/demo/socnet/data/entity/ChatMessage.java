@@ -43,6 +43,7 @@ public class ChatMessage implements Comparable<ChatMessage> {
     private Long toUserId;
 
     private String content;
+    @Builder.Default
     private Date timeStamp = new Date(Calendar.getInstance().getTimeInMillis());
 
     @Override
@@ -66,6 +67,7 @@ public class ChatMessage implements Comparable<ChatMessage> {
                 ", content='" + content + '\'' +
                 ", timeStamp=" + timeStamp +
                 '}';
+
     }
 
     @Override

@@ -27,6 +27,11 @@
           integrity="undefined" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.min.js" integrity="undefined"
             crossorigin="anonymous"></script>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="/chat.js"></script>
+
 
 </head>
 <body>
@@ -60,44 +65,26 @@
 </nav>
 <div class="container" style="min-height: 850px;">
 
-    <div data-bs-spy="scroll" data-bs-offset="0" tabindex="0"
+    <div id="messages" data-bs-spy="scroll" data-bs-offset="0" tabindex="0"
          style="display:flex;flex-direction:column-reverse;height:500px;overflow-x:hidden;overflow-y:scroll;position:relative;top: 20px;bottom 5px;">
-        <div th:each="message: ${chatThread}" style="margin-right: 5px;margin-bottom: 15px;">
-          <div class="row">
-            <div class="col" width="50%" th:if="${message.fromUserId} == ${session.user.id}"></div>
-            <div class="col" width="50%">
-                <div class="card shadow">
-                    <p class="card-header fw-bold" th:if="${message.fromUserId} != ${session.user.id}"
-                       th:text="${receiver.firstName}"/>
-                    <p class="card-header fw-bold" th:if="${message.fromUserId} == ${session.user.id}"
-                       th:text="${session.user.firstName}"/>
-                    <div class="card-body">
-                        <p class="text-end card-text fs-4" th:if="${message.fromUserId} == ${session.user.id}"
-                           th:text="${message.content}"/>
-                        <p class="card-text fs-4" th:if="${message.fromUserId} != ${session.user.id}"
-                           th:text="${message.content}"/>
-                    </div>
-                    <div class="card-footer text-end text-muted" style="font-size: smaller;"
-                         th:text="${#dates.format(message.timeStamp, 'HH:mm, dd/MM/yyyy')}"/>
-                </div>
-            </div>
-            <div class="col" width="50%" th:if="${message.fromUserId} != ${session.user.id}"></div>
-          </div>
-        </div>
     </div>
 
 
     <div class="card shadow mb-3" style="position:relative;top: 20px;">
         <div class="card-header">Send Message to [[${receiver.firstName}]]</div>
         <div class="card-body">
-            <form th:action="@{/sendMessage}" th:object="${message}" method="POST">
-                <input type="hidden" th:field="*{fromUserId}">
-                <input type="hidden" th:field="*{toUserId}">
+            <form id="sendform">
                 <div class="input-group">
-                    <textarea class="form-control" aria-label="messageText" placeholder="Message"
-                              th:field="*{content}"></textarea>
+                    <textarea class="form-control"
+                              id="content"
+                              aria-label="messageText"
+                              placeholder="Message"></textarea>
                 </div>
-                <button class="btn shadow btn-light" type="submit">Send</button>
+                <input type="hidden" id="fromId" th:value="${session.user.id}">
+                <input type="hidden" id="toId" th:value="${receiver.id}">
+                <input type="hidden" id="fromName" th:value="${session.user.firstName}">
+                <input type="hidden" id="toName" th:value="${receiver.firstName}">
+                <button class="btn shadow btn-light" id="send" type="submit">Send</button>
             </form>
         </div>
     </div>
