@@ -36,14 +36,18 @@ function fetchMessages() {
 }
 
 function showMessages(messages) {
-    $("#messages").html("");
+
+    var clear= true;
     for (message of JSON.parse(messages)) {
 
        if((message.fromUserId != $("#fromId").val() && message.fromUserId != $("#toId").val())
         || (message.toUserId != $("#fromId").val() && message.toUserId != $("#toId").val())) {
            continue;
         }
-
+        if (clear) {
+            $("#messages").html("");
+            clear = false;
+        }
 
         var name = $("#fromName").val();
         var rightAlign = "<div class=\"col\" width=\"50%\"></div>\n";
