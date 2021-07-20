@@ -86,10 +86,20 @@ public class ChatController {
         return "redirect:chat";
     }
 
+    @GetMapping("/activeChats")
+    public String getChatPartners(
+            HttpSession httpSession,
+            Model model) {
+        UserData user = (UserData) httpSession.getAttribute("user");
+        List<UserData> users = chatService.getActiveChatPartners(user.getId());
+        model.addAttribute("chatPartners", users);
+        return "activechats";
+    }
+
     @MessageMapping("/getMessages")
     @SendTo("/topic/messages")
-    public List<ChatMessage> sendMessage(ChatThread.Key key) {
-        return chatService.getThread(key.getFromUserId(), key.getToUserId(), true);
+    public List<ChatMessage> getMessage(ChatThread.Key key) {
+        return chatService.getThreadContent(key.getFromUserId(), key.getToUserId(), true);
     }
 
     @MessageMapping("/sendMessage")

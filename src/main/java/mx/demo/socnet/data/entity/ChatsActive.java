@@ -27,21 +27,25 @@ import java.util.stream.Collectors;
  * @project socnet
  */
 
-public class ChatMailbox {
+public class ChatsActive {
     private final UserData owner;
-    private List<ChatMessage> chat = new ArrayList<>();
+    private List<ChatThread.Key> chatThreads = new ArrayList<>();
 
-    public ChatMailbox(UserData owner) {
+    public ChatsActive(UserData owner) {
         this.owner = owner;
     }
 
-    public void addMessage(ChatMessage chatMessage){
-        if (chatMessage.getToUserId().equals(owner.getId())) {
-            chat.add(chatMessage);
-        }
+    public void addThread(ChatThread.Key chatKey){
+        chatThreads.add(chatKey);
     }
 
-    public List<Long> getSenderIds() {
-        return chat.stream().map(chatMessage -> chatMessage.getFromUserId()).distinct().sorted().collect(Collectors.toList());
+    public List<Long> getChatPartnersIds() {
+        return chatThreads.stream().map(chatThread -> {
+            Long fromId = chatThread.getFromUserId();
+            if (fromId.equals(owner.getId())) {
+                fromId = chatThread.getToUserId();
+            }
+            return fromId;
+        }).distinct().sorted().collect(Collectors.toList());
     }
 }

@@ -45,6 +45,6 @@ public class ChatKafkaConsumer {
     @KafkaListener(topics = "${kafka.topic.chat}")
     public void processMessage(ChatMessage content) {
         log.info("Received {} ", content);
-        chatService.receive(content);
+        chatService.addMessageToThread(content);
     }
 }

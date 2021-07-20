@@ -39,6 +39,9 @@
                 <a class="nav-link active" aria-current="page" href="/directory">Directory</a>
             </li>
             <li class="nav-item">
+                <a  class="nav-link active" aria-current="page" th:href="@{/activeChats}">Active Chats</a>
+            </li>
+            <li class="nav-item">
                 <a  class="nav-link active" aria-current="page" th:href="@{/newpost}">New post</a>
             </li>
             <li class="nav-item">
@@ -65,9 +68,9 @@
         </div>
         <div class="col-lg-8 position-relative" style="position:relative;top: 20px;" >
             <div th:if="${user.posts.size == 0}">
-                <h1 >No posts</h1>
+                <h1>No posts</h1>
             </div>
-            <div id="messages" data-bs-spy="scroll" data-bs-offset="0" tabindex="0"
+            <div data-bs-spy="scroll" data-bs-offset="0" tabindex="0"
                  style="height:700px;overflow-x:hidden;overflow-y:scroll;position:relative;top: 20px;bottom 5px;">
                 <div class="card  mb-3 shadow" th:each="post: ${user.posts}" th:if="${user.posts.size > 0}" >
                     <div class="card-header">

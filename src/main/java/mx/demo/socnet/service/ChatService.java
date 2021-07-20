@@ -17,9 +17,10 @@
 package mx.demo.socnet.service;
 
 import lombok.extern.slf4j.Slf4j;
-import mx.demo.socnet.data.entity.ChatMailbox;
+import mx.demo.socnet.data.entity.ChatsActive;
 import mx.demo.socnet.data.entity.ChatMessage;
 import mx.demo.socnet.data.entity.ChatThread;
+import mx.demo.socnet.data.entity.UserData;
 import mx.demo.socnet.data.repository.UserDataRepository;
 import mx.demo.socnet.kafka.ChatKafkaProducer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class ChatService {
     private final ChatKafkaProducer producer;
     private final UserDataRepository userDataRepository;
     private final Map<ChatThread.Key, ChatThread> chatThreadHashMap = new HashMap<>();
-    private final Map<Long, ChatMailbox> chatMailboxHashMap = new HashMap<>();
+    private final Map<Long, ChatsActive> activeChatsHashMap = new HashMap<>();
 
     @Autowired
     public ChatService(ChatKafkaProducer producer, UserDataRepository userDataRepository) {
@@ -54,37 +55,53 @@ public class ChatService {
         producer.send(message);
     }
 
-    public void receive(ChatMessage message){
-        ChatThread.Key key = new ChatThread.Key(message.getFromUserId(), message.getToUserId());
-        ChatThread currentThread = chatThreadHashMap.get(key);
-        ChatMailbox currentMailbox = chatMailboxHashMap.get(message.getToUserId());
-        if (currentThread == null) {
-            currentThread = new ChatThread(key);
-            chatThreadHashMap.put(key, currentThread);
-        }
-        if (currentMailbox == null) {
-            currentMailbox = new ChatMailbox(userDataRepository.findById(message.getToUserId()).orElseThrow());
-            chatMailboxHashMap.put(message.getToUserId(), currentMailbox);
-        }
-        currentThread.addMessage(message);
-        currentMailbox.addMessage(message);
+    public List<ChatMessage> getThreadContent(Long userId1, Long userId2, boolean orderReverse){
+        return getThreadContent(userId1, userId2, new Date(0), orderReverse);
     }
 
-    public List<ChatMessage> getThread(Long userId1, Long userId2, boolean orderReverse){
-        return getThread(userId1, userId2, new Date(0), orderReverse);
-    }
-
-    public List<ChatMessage> getThread(Long userId1, Long userId2, Date after, boolean orderReverse){
+    public List<ChatMessage> getThreadContent(Long userId1, Long userId2, Date after, boolean orderReverse){
         ChatThread.Key key = new ChatThread.Key(userId1, userId2);
         ChatThread currentThread = chatThreadHashMap.get(key);
         if (currentThread == null) {
-            currentThread = new ChatThread(key);
-            chatThreadHashMap.put(key, currentThread);
+            return new ArrayList<>();
         }
         if (orderReverse) {
             return currentThread.getChat(after).stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
         } else {
             return currentThread.getChat(after);
         }
+    }
+
+    public void addMessageToThread(ChatMessage message) {
+        ChatThread.Key key = new ChatThread.Key(message.getFromUserId(), message.getToUserId());
+        ChatThread currentThread = chatThreadHashMap.get(key);
+        if (currentThread == null) {
+            currentThread = new ChatThread(key);
+            chatThreadHashMap.put(key, currentThread);
+        }
+        currentThread.addMessage(message);
+        activateChatThread(key);
+    }
+
+    private void activateChatThread(ChatThread.Key key) {
+        getActiveChats(key.getFromUserId()).addThread(key);
+        getActiveChats(key.getToUserId()).addThread(key);
+    }
+
+    private ChatsActive getActiveChats(Long userId) {
+        ChatsActive currentActiveChats = activeChatsHashMap.get(userId);
+        if (currentActiveChats == null) {
+            currentActiveChats = new ChatsActive(userDataRepository.findById(userId).orElseThrow());
+            activeChatsHashMap.put(userId, currentActiveChats);
+        }
+        return currentActiveChats;
+    }
+
+    public List<UserData> getActiveChatPartners(Long userId){
+        ChatsActive activeChats = getActiveChats(userId);
+
+        return activeChats.getChatPartnersIds().stream()
+                .map(partnerId -> userDataRepository.findById(partnerId).orElseThrow()).collect(Collectors.toList());
+
     }
 }
