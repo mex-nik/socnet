@@ -1,5 +1,5 @@
-insert into user_data (id, first_name, last_name, email, admin, gender, country, password) values (1, 'Adaline', 'Ferreras', 'aferreras0@chron.com', false, 'Male', 'Panama', 'Z4tDHBA8X');
-insert into user_data (id, first_name, last_name, email, admin, gender, country, password) values (2, 'Sella', 'Dankov', 'sdankov1@newyorker.com', false, 'Male', 'Mongolia', 'nasOYFLz3yco');
+insert into user_data (id, first_name, last_name, email, admin, gender, country, password) values (1, 'Adaline', 'Ferreras', 'admin@admin.com', true, 'Male', 'Panama', 'admin');
+insert into user_data (id, first_name, last_name, email, admin, gender, country, password) values (2, 'Sella', 'Dankov', 'regular@regular.com', false, 'Male', 'Mongolia', 'regular');
 insert into user_data (id, first_name, last_name, email, admin, gender, country, password) values (3, 'Inglis', 'Hiley', 'ihiley2@microsoft.com', false, 'Male', 'China', 'LkbP4mS8L');
 insert into user_data (id, first_name, last_name, email, admin, gender, country, password) values (4, 'Ricki', 'Simmonds', 'rsimmonds3@hao123.com', true, 'Male', 'Philippines', 'PUSHKVC');
 insert into user_data (id, first_name, last_name, email, admin, gender, country, password) values (5, 'Bobine', 'Scardafield', 'bscardafield4@sitemeter.com', true, 'Female', 'Portugal', 'WAxTKne0');

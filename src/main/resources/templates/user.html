@@ -67,22 +67,25 @@
             <div th:if="${user.posts.size == 0}">
                 <h1 >No posts</h1>
             </div>
-            <div class="card  mb-3 shadow" th:each="post: ${user.posts}" th:if="${user.posts.size > 0}" >
-                <div class="card-header">
-                    <div class="row justify-content-start">
-                        <div class="col-1" th:if="((${user.id} == ${session.user.id}) or (${session.user.role.authority} == 'admin'))">
-                            <form th:action="@{/deletePost}" method="POST">
-                                <input type="hidden" th:value="${user}" th:name="user">
-                                <input type="hidden" th:value="${post}" th:name="post">
-                                <button type="submit" class="btn-close" aria-label="Close"></button>
-                            </form>
-                        </div>
-                        <div class="col-3">
-                            <span style="position:relative;top: 5px;" th:text="${post.published}" />
+            <div id="messages" data-bs-spy="scroll" data-bs-offset="0" tabindex="0"
+                 style="height:700px;overflow-x:hidden;overflow-y:scroll;position:relative;top: 20px;bottom 5px;">
+                <div class="card  mb-3 shadow" th:each="post: ${user.posts}" th:if="${user.posts.size > 0}" >
+                    <div class="card-header">
+                        <div class="row justify-content-start">
+                            <div class="col-1" th:if="((${user.id} == ${session.user.id}) or (${session.user.role.authority} == 'admin'))">
+                                <form th:action="@{/deletePost}" method="POST">
+                                    <input type="hidden" th:value="${user}" th:name="user">
+                                    <input type="hidden" th:value="${post}" th:name="post">
+                                    <button type="submit" class="btn-close" aria-label="Close"></button>
+                                </form>
+                            </div>
+                            <div class="col-3">
+                                <span style="position:relative;top: 5px;" th:text="${post.published}" />
+                            </div>
                         </div>
                     </div>
+                    <div class="card-body" th:text="${post.post}"/>
                 </div>
-                <div class="card-body" th:text="${post.post}"/>
             </div>
         </div>
     </div>
