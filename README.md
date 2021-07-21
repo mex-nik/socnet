@@ -1,7 +1,7 @@
-#**SocNet**
+# **SocNet**
 by Mladen Nikolic, [mladen.nikolic.mex@gmail.com](mailto:mladen.nikolic.mex@gmail.com)
 
-##General information
+## General information
 **SocNet** is an application with some features of a social network site.
 
 As in every social network, there are users of this application.
@@ -39,16 +39,16 @@ Other technologies used:
 -   Mockito
 -   HTML, CSS
 
-##Starting **SocNet**
+## Starting **SocNet**
 
-##IDE
+## IDE
 Before starting the application in IDE, prepare the environment by starting Kafka and Zookeeper docker containers from the command line:
 ``docker-compose -f socnet-kafka.yml -p sn up -d``
 
 To stop Kafka and Zookeeper docker containers:
 ``docker-compose -f socnet-kafka.yml -p sn down``
 
-##Command line and Docker 
+## Command line and Docker 
 
 It is possible to create a docker container with the application by running:
 ``mvn package docker:build -Dapp-profile=default``
@@ -61,7 +61,7 @@ Stop with:
 
 ``docker-compose -f socnet.yml -p sn down``
 
-##Accessing **SocNet**
+## Accessing **SocNet**
 
 After setting up environment and starting **SocNet**, it is available at [http://localhost:8080/](http://localhost:8080/).
 
