@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -42,8 +43,8 @@ public class ChatService {
 
     private final ChatKafkaProducer producer;
     private final UserDataRepository userDataRepository;
-    private final Map<ChatThread.Key, ChatThread> chatThreadHashMap = new HashMap<>();
-    private final Map<Long, ChatsActive> activeChatsHashMap = new HashMap<>();
+    private final Map<ChatThread.Key, ChatThread> chatThreadHashMap = new ConcurrentHashMap<>();
+    private final Map<Long, ChatsActive> activeChatsHashMap = new ConcurrentHashMap<>();
 
     @Autowired
     public ChatService(ChatKafkaProducer producer, UserDataRepository userDataRepository) {
@@ -61,10 +62,7 @@ public class ChatService {
 
     public List<ChatMessage> getThreadContent(Long userId1, Long userId2, Date after, boolean orderReverse){
         ChatThread.Key key = new ChatThread.Key(userId1, userId2);
-        ChatThread currentThread = chatThreadHashMap.get(key);
-        if (currentThread == null) {
-            return new ArrayList<>();
-        }
+        ChatThread currentThread = chatThreadHashMap.computeIfAbsent(key, key1 -> new ChatThread(key1));
         if (orderReverse) {
             return currentThread.getChat(after).stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
         } else {
@@ -74,11 +72,11 @@ public class ChatService {
 
     public void addMessageToThread(ChatMessage message) {
         ChatThread.Key key = new ChatThread.Key(message.getFromUserId(), message.getToUserId());
-        ChatThread currentThread = chatThreadHashMap.get(key);
-        if (currentThread == null) {
-            currentThread = new ChatThread(key);
-            chatThreadHashMap.put(key, currentThread);
-        }
+        ChatThread currentThread = chatThreadHashMap.computeIfAbsent(key, key1 -> {
+            ChatThread currentThread1 = new ChatThread(key);
+            chatThreadHashMap.put(key1, currentThread1);
+            return currentThread1;
+        });
         currentThread.addMessage(message);
         activateChatThread(key);
     }
@@ -89,12 +87,11 @@ public class ChatService {
     }
 
     private ChatsActive getActiveChats(Long userId) {
-        ChatsActive currentActiveChats = activeChatsHashMap.get(userId);
-        if (currentActiveChats == null) {
-            currentActiveChats = new ChatsActive(userDataRepository.findById(userId).orElseThrow());
-            activeChatsHashMap.put(userId, currentActiveChats);
-        }
-        return currentActiveChats;
+        return activeChatsHashMap.computeIfAbsent(userId, userId1 -> {
+            ChatsActive currentActiveChats = new ChatsActive(userDataRepository.findById(userId).orElseThrow());
+            activeChatsHashMap.put(userId1, currentActiveChats);
+            return currentActiveChats;
+        });
     }
 
     public List<UserData> getActiveChatPartners(Long userId){

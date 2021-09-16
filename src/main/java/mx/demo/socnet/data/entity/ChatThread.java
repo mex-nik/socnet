@@ -22,6 +22,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
 
 public class ChatThread {
     private final Key chatKey;
-    private List<ChatMessage> chat = new ArrayList<>();
+    private List<ChatMessage> chat = new CopyOnWriteArrayList<>();
 
     public ChatThread(Key chatKey) {
         this.chatKey = chatKey;
